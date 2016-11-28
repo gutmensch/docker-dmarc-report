@@ -1,2 +1,2 @@
 #!/bin/sh
-/root/raumserver/raumsrvDaemon && sleep infinity
+/opt/raumserver/raumsrvDaemon && sleep infinity

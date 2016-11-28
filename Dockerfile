@@ -5,8 +5,11 @@ MAINTAINER Robert Schumann <gutmensch@n-os.org>
 ENV wget_opts "-q --no-check-certificate"
 ENV raumserver_release "http://bassmaniacs.com/data/appBinaries/raumserver/currentVersion"
 ENV raumserver_libs "https://github.com/ChriD/Raumserver/raw/master/source/RaumserverDaemon/libs/linux_X64"
+ENV PATH /root:$PATH
 
 WORKDIR /root
+
+COPY start.sh ./start.sh
 
 RUN set -x \
       && apt-get update \
@@ -27,9 +30,10 @@ RUN set -x \
       && wget $wget_opts $raumserver_libs/libunwind-setjmp.so.0.0.0 -O /usr/lib/libunwind-setjmp.so.0.0.0 \
       && ln -s /usr/lib/libunwind-setjmp.so.0 /usr/lib/libunwind-setjmp.so.0 \
       && wget $wget_opts $raumserver_libs/libunwind-ptrace.so.0.0.0 -O /usr/lib/libunwind-ptrace.so.0.0.0 \
-      && ln -s /usr/lib/libunwind-ptrace.so.0 /usr/lib/libunwind-ptrace.so.0
-      
+      && ln -s /usr/lib/libunwind-ptrace.so.0 /usr/lib/libunwind-ptrace.so.0 \
+      && chmod +x start.sh
+
 EXPOSE 8080
 
-CMD ["/root/raumserver/raumsrvDaemon"]
+CMD ["start.sh"]
 

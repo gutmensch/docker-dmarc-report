@@ -8,24 +8,26 @@ ENV raumserver_libs https://github.com/ChriD/Raumserver/raw/master/source/Raumse
 
 WORKDIR /root
 
-RUN apt-get update \
+RUN set -x \
+      && apt-get update \
       && apt-get install -y --no-install-recommends git wget unzip \
       && rm -rf /var/lib/apt/lists/*
 
-RUN wget $wget_opts $raumserver_release/raumserverDaemon_linux_X64.zip \
+RUN set -x \
+      && wget $wget_opts $raumserver_release/raumserverDaemon_linux_X64.zip \
       && unzip raumserverDaemon_linux_X64.zip -d raumserver \
       && mkdir -p /etc/raumfeld/raumserverDaemon \
-      && ln -sv /root/raumserver/docroot /etc/raumfeld/raumserverDaemon/docroot \
+      && ln -s /root/raumserver/docroot /etc/raumfeld/raumserverDaemon/docroot \
       && wget $wget_opts $raumserver_libs/libunwind-x86_64.so.8.0.1 -O /usr/lib/libunwind-x86_64.so.8.0.1 \
-      && ln -sv /usr/lib/libunwind-x86_64.so.8.0.1 /usr/lib/libunwind-x86_64.so.8 \
+      && ln -s /usr/lib/libunwind-x86_64.so.8.0.1 /usr/lib/libunwind-x86_64.so.8 \
       && wget $wget_opts $raumserver_libs/libunwind.so.8.0.1 -O /usr/lib/libunwind.so.8.0.1 \
-      && ln -sv /usr/lib/libunwind.so.8.0.1 /usr/lib/libunwind.so.8 \
+      && ln -s /usr/lib/libunwind.so.8.0.1 /usr/lib/libunwind.so.8 \
       && wget $wget_opts $raumserver_libs/libunwind-coredump.so.0.0.0 -O /usr/lib/libunwind-coredump.so.0.0.0 \
-      && ln -sv /usr/lib/libunwind-coredump.so.0 /usr/lib/libunwind-coredump.so.0 \
+      && ln -s /usr/lib/libunwind-coredump.so.0 /usr/lib/libunwind-coredump.so.0 \
       && wget $wget_opts $raumserver_libs/libunwind-setjmp.so.0.0.0 -O /usr/lib/libunwind-setjmp.so.0.0.0 \
-      && ln -sv /usr/lib/libunwind-setjmp.so.0 /usr/lib/libunwind-setjmp.so.0 \
+      && ln -s /usr/lib/libunwind-setjmp.so.0 /usr/lib/libunwind-setjmp.so.0 \
       && wget $wget_opts $raumserver_libs/libunwind-ptrace.so.0.0.0 -O /usr/lib/libunwind-ptrace.so.0.0.0 \
-      && ln -sv /usr/lib/libunwind-ptrace.so.0 /usr/lib/libunwind-ptrace.so.0
+      && ln -s /usr/lib/libunwind-ptrace.so.0 /usr/lib/libunwind-ptrace.so.0
       
 EXPOSE 8080
 

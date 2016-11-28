@@ -19,21 +19,15 @@ RUN set -x \
 RUN set -x \
       && wget $wget_opts $raumserver_release/raumserverDaemon_linux_X64.zip \
       && unzip raumserverDaemon_linux_X64.zip -d raumserver \
+      && rm -f raumserverDaemon_linux_X64.zip \
       && mkdir -p /etc/raumfeld/raumserverDaemon \
       && ln -s /root/raumserver/docroot /etc/raumfeld/raumserverDaemon/docroot \
-      && wget $wget_opts $raumserver_libs/libunwind-x86_64.so.8.0.1 -O /usr/lib/libunwind-x86_64.so.8.0.1 \
-      && ln -s /usr/lib/libunwind-x86_64.so.8.0.1 /usr/lib/libunwind-x86_64.so.8 \
-      && wget $wget_opts $raumserver_libs/libunwind.so.8.0.1 -O /usr/lib/libunwind.so.8.0.1 \
-      && ln -s /usr/lib/libunwind.so.8.0.1 /usr/lib/libunwind.so.8 \
-      && wget $wget_opts $raumserver_libs/libunwind-coredump.so.0.0.0 -O /usr/lib/libunwind-coredump.so.0.0.0 \
-      && ln -s /usr/lib/libunwind-coredump.so.0 /usr/lib/libunwind-coredump.so.0 \
-      && wget $wget_opts $raumserver_libs/libunwind-setjmp.so.0.0.0 -O /usr/lib/libunwind-setjmp.so.0.0.0 \
-      && ln -s /usr/lib/libunwind-setjmp.so.0 /usr/lib/libunwind-setjmp.so.0 \
-      && wget $wget_opts $raumserver_libs/libunwind-ptrace.so.0.0.0 -O /usr/lib/libunwind-ptrace.so.0.0.0 \
-      && ln -s /usr/lib/libunwind-ptrace.so.0 /usr/lib/libunwind-ptrace.so.0 \
+      && for l in libunwind-x86_64.so.8.0.1 libunwind.so.8.0.1 libunwind-coredump.so.0.0.0 libunwind-setjmp.so.0.0.0 libunwind-ptrace.so.0.0.0; do \
+           wget $wget_opts $raumserver_libs/"$l" -O /usr/lib/"$l" && \
+           ln -s /usr/lib/"$l" /usr/lib/"$(echo $l | sed 's%\.[0-9]\.[0-9]$%%')" ; \
+         done \
       && chmod +x start.sh
 
 EXPOSE 8080
 
 CMD ["start.sh"]
-

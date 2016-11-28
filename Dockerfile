@@ -2,9 +2,9 @@ FROM ubuntu:14.04
 
 MAINTAINER Robert Schumann <gutmensch@n-os.org>
 
-ENV wget_opts "-q"
-ENV raumserver_release http://bassmaniacs.com/data/appBinaries/raumserver/currentVersion
-ENV raumserver_libs https://github.com/ChriD/Raumserver/raw/master/source/RaumserverDaemon/libs/linux_X64
+ENV wget_opts "-q --no-check-certificate"
+ENV raumserver_release "http://bassmaniacs.com/data/appBinaries/raumserver/currentVersion"
+ENV raumserver_libs "https://github.com/ChriD/Raumserver/raw/master/source/RaumserverDaemon/libs/linux_X64"
 
 WORKDIR /root
 

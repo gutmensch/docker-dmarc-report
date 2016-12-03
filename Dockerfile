@@ -23,7 +23,7 @@ RUN set -x \
       && unzip raumserverDaemon_linux_X64.zip -d raumserver \
       && rm -f raumserverDaemon_linux_X64.zip \
       && mv raumserver/settings.xml raumserver/settings.xml.dist \
-      && sed -i 's%RAUMSERVER_HTTP%$raumserver_http%' settings.xml \
+      && sed -i 's%RAUMSERVER_HTTP%"$raumserver_http"%' settings.xml \
       && mv settings.xml raumserver/ \
       && for l in libunwind-x86_64.so.8.0.1 libunwind.so.8.0.1 libunwind-coredump.so.0.0.0 libunwind-setjmp.so.0.0.0 libunwind-ptrace.so.0.0.0; do \
            wget $wget_opts $raumserver_libs/"$l" -O /usr/lib/"$l" && \

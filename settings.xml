@@ -15,7 +15,7 @@
     <NetworkAdapterName priority="1" waitForAppearance="250">bond0</NetworkAdapterName>
     <NetworkAdapterName priority="2" waitForAppearance="250">eth0</NetworkAdapterName>
     <NetworkAdapterName priority="3" waitForAppearance="250">wlan0</NetworkAdapterName>
-    <NetworkAdapterName priority="3" waitForAppearance="0">Killer Wireless-N 1202 Network Adapter</NetworkAdapterName>
+    <NetworkAdapterName priority="4" waitForAppearance="0">Killer Wireless-N 1202 Network Adapter</NetworkAdapterName>
     
     <!-- Enable/disable discovery of non raumfeld renderers -->
     <AddNonRaumfeldDevices>0</AddNonRaumfeldDevices>

@@ -1,2 +1,2 @@
 #!/bin/sh
-/opt/raumserver/raumsrvDaemon && sleep infinity
+/opt/raumserver/raumsrvDaemon && tail -f /opt/raumserver/log/*.log

@@ -1,6 +1,6 @@
 # docker-raumserver [![Docker Pulls](https://img.shields.io/docker/pulls/gutmensch/raumserver.svg)](https://registry.hub.docker.com/u/gutmensch/raumserver/)
 
-raumserver is a HTTP REST API daemon for RF devices created by ChriD (see https://github.com/ChriD/Raumserver). It can be installed on RF devices itself or in the same network with communication via UPnP.
+Raumserver is a HTTP REST API daemon for RF devices created by ChriD (see https://github.com/ChriD/Raumserver). It can be installed on RF devices itself or in the same network with communication via UPnP.
 
 ## Usage
 ```

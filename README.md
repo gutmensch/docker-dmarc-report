@@ -5,7 +5,7 @@ Raumserver is a HTTP REST API daemon for RF devices created by ChriD (see https:
 ## Usage
 ```
 docker pull gutmensch/raumserver
-docker run --net=host -ti gutmensch/docker-raumserver start.sh
+docker run --net=host -ti gutmensch/raumserver start.sh
 ```
 
 ## Version and zone config

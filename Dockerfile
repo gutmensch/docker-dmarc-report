@@ -14,7 +14,7 @@ COPY settings.xml ./settings.xml
 
 RUN set -x \
       && apt-get update \
-      && apt-get install -y --no-install-recommends wget unzip libunwind8 \
+      && apt-get install -y --no-install-recommends wget unzip binutils libunwind8 \
       && rm -rf /var/lib/apt/lists/*
 
 RUN set -x \
@@ -23,7 +23,8 @@ RUN set -x \
       && mv raumserver/settings.xml raumserver/settings.xml.dist \
       && sed -i "s%RAUMSERVER_HTTP%"$raumserver_http"%" settings.xml \
       && mv settings.xml raumserver/ \
-      && apt-get autoremove -y wget unzip \
+      && strip -v raumserver/raumsrvDaemon \
+      && apt-get autoremove -y wget unzip binutils \
       && chmod +x start.sh
 
 EXPOSE $raumserver_http

@@ -2,7 +2,6 @@ FROM debian:jessie-slim
 
 MAINTAINER Robert Schumann <gutmensch@n-os.org>
 
-ENV wget_opts "-q --no-check-certificate"
 ENV raumserver_release "http://bassmaniacs.com/data/appBinaries/raumserver/currentVersion"
 ENV raumserver_http "8090"
 ENV PATH /opt:$PATH
@@ -18,7 +17,7 @@ RUN set -x \
       && rm -rf /var/lib/apt/lists/*
 
 RUN set -x \
-      && wget $wget_opts $raumserver_release/raumserverDaemon_linux_X64.zip \
+      && wget -q --no-check-certificate $raumserver_release/raumserverDaemon_linux_X64.zip \
       && unzip raumserverDaemon_linux_X64.zip -d raumserver && rm -f raumserverDaemon_linux_X64.zip \
       && mv raumserver/settings.xml raumserver/settings.xml.dist \
       && sed -i "s%RAUMSERVER_HTTP%"$raumserver_http"%" settings.xml \

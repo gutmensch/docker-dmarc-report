@@ -12,12 +12,12 @@ docker run --net=host -ti gutmensch/raumserver start.sh
 
 ## Version and zone config
 ```
-$ curl docker:8090/raumserver/data/getVersion | python -mjson.tool
+$ curl docker:3535/raumserver/data/getVersion | python -mjson.tool
 {
     "raumkernelLib": "1.0.2",
     "raumserverLib": "1.0.2"
 }
-$ curl docker:8090/raumserver/data/getZoneConfig | python -mjson.tool
+$ curl docker:3535/raumserver/data/getZoneConfig | python -mjson.tool
 [
     {
         "UDN": "uuid:92A8D729-D665-4D13-8E63-B0994E4BDB84",

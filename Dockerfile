@@ -3,7 +3,7 @@ FROM debian:jessie-slim
 MAINTAINER Robert Schumann <gutmensch@n-os.org>
 
 ENV raumserver_release "http://bassmaniacs.com/data/appBinaries/raumserver/currentVersion"
-ENV raumserver_http "8090"
+ENV raumserver_http "3535"
 
 ENV PATH /opt:$PATH
 ENV DEBIAN_FRONTEND noninteractive

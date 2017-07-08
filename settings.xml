@@ -5,7 +5,7 @@
     <!-- Log settings. You might change some settings here if you want to change the output log level or add/remove a log adapter
          To get the available options for 'LogLevel' and 'LogAdapter' please take a look at the documentation -->
     <Log>
-      <Level>DEBUG</Level>
+      <Level>ERROR</Level>
       <LevelUpnp>ERROR</LevelUpnp>
       <!-- <LevelUpnp>ALL,ADAPTERCHANGE,BONJOUR,DEVICE,DVDEVICE,DVEVENT,DVWEBSOCKET,DVINVOCATION,DVSSDPNOTIFIER,ERROR,EVENT,HTTP,LPEC,NETWORK,NONE,SERVICE,SSDPMULTICAST,;SSDPUNICAST,TRACE,THREAD,TIMER,VERBOSE,XMLFETCH</LevelUpnp> -->
     </Log>
@@ -21,7 +21,7 @@
     <AddNonRaumfeldDevices>0</AddNonRaumfeldDevices>
 
       <!-- the time step in ms on which the kernel does refresh the device list to get abruplty removed UPNP devices (without announcing its removal) -->
-    <UPNPRefreshTimeActive>1</UPNPRefreshTimeActive>
+    <UPNPRefreshTimeActive>500</UPNPRefreshTimeActive>
     <UPNPRefreshTime>30000</UPNPRefreshTime>
 
     <!-- Some internal sleeping values -->

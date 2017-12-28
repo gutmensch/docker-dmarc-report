@@ -10,8 +10,9 @@ ENV DEBIAN_FRONTEND noninteractive
 
 WORKDIR /opt
 
-COPY start.sh ./start.sh
-COPY settings.xml ./settings.xml
+ADD start.sh /opt/start.sh
+ADD settings.xml /opt/settings.xml
+ADD public_html /opt/public_html
 
 RUN set -x \
       && apt-get update \
@@ -22,6 +23,8 @@ RUN set -x \
       && mv raumserver/settings.xml raumserver/settings.xml.dist \
       && sed -i "s%RAUMSERVER_HTTP%"$raumserver_http"%" settings.xml \
       && mv settings.xml raumserver/ \
+      && mv raumserver/docroot raumserver/docroot.dist \
+      && mv public_html raumserver/docroot \
       && strip -v raumserver/raumsrvDaemon \
       && apt-get autoremove -y wget unzip binutils \
       && chmod +x start.sh

@@ -207,8 +207,8 @@ function tableEntry(name, id, online, roomZoneId, isMute, transportState, curren
     td_toggle_mute.innerHTML = "<button style=\"font-size:110%\"><i onclick="+event+" class=\"fa fa-volume-off\"></i></button>";
     tr.appendChild(td_toggle_mute);
     var td_status = document.createElement("td");
-    td_status.className = "ui-btn-text zone-room-list";
-    td_status.innerHTML = transportState;
+    td_status.className = "ui-btn-text zone-room-list zone-room-list-status";
+    td_status.innerHTML = transportState.toLowerCase();
     tr.appendChild(td_status);
     return tr;
 }
@@ -495,16 +495,18 @@ var AppRouter = Backbone.Router.extend({
     updatePlayer: function() {
         var player = document.getElementById("player_control");
         var player_row = document.createElement("tr");
+        var volume_row = document.createElement("tr");
         player.appendChild(player_row);
+        player.appendChild(volume_row);
         player_row.appendChild(playerButton('fa-backward','prev',{id: getUrlParam('id')}));
         player_row.appendChild(playerButton('fa-play','play',{id: getUrlParam('id')}));
         player_row.appendChild(playerButton('fa-pause','pause',{id: getUrlParam('id')}));
         player_row.appendChild(playerButton('fa-forward','next',{id: getUrlParam('id')}));
         player_row.appendChild(playerButton('fa-stop','stop',{id: getUrlParam('id')}));
         player_row.appendChild(playerButton('fa-repeat','setPlayMode',{id: getUrlParam('id'), mode:'REPEAT_ALL'}));
-        player_row.appendChild(playerButton('fa-volume-down','volumeDown',{id: getUrlParam('id'), scope:'zone', value:'2'}));
-        player_row.appendChild(playerButton('fa-volume-up','volumeUp',{id: getUrlParam('id'), scope:'zone', value:'2'}));
-        player_row.appendChild(playerButton('fa-volume-off','toggleMute',{id: getUrlParam('id'), scope:'zone'}));
+        volume_row.appendChild(playerButton('fa-volume-down','volumeDown',{id: getUrlParam('id'), scope:'zone', value:'2'}));
+        volume_row.appendChild(playerButton('fa-volume-up','volumeUp',{id: getUrlParam('id'), scope:'zone', value:'2'}));
+        volume_row.appendChild(playerButton('fa-volume-off','toggleMute',{id: getUrlParam('id'), scope:'zone'}));
     },
 
     changePage: function (page) {

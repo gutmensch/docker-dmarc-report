@@ -17,6 +17,12 @@ td.zone-room-list {
     padding-right: 2px;
     text-align: center;
 }
+td.zone-room-list-status {
+    padding-left: 2px;
+    padding-right: 2px;
+    text-align: center;
+    font-style: italic;
+}
 tr.zone-room-list {
     background: #D0D0D0;
 }

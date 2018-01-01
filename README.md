@@ -11,8 +11,8 @@ docker run --net=host -ti gutmensch/raumserver start.sh
 ```
 
 ## WebClient
-This image now features a simple AJAX webclient. By default it should be available after running the image at http://docker:3535/. The Quick Source menu is not yet dynamic. Take a look at the top of main.js, if you want to rebuild - Playlists and HTTP Streams are supported, I didn't get containers to work (see loadContainer in the raumserver documentation). The client's interface was designed to be as suitable for smartphones/tablets as possible, therefor some constraints with regards to line length etc. pp.
-<img src="https://github.com/gutmensch/docker-raumserver/raw/master/images/screenshot.png" width="200" />
+This image now features a simple AJAX webclient. By default it should be available after running the image at http://docker:3535/. The Quick Source menu is not yet dynamic. Take a look at the top of main.js, if you want to rebuild - Playlists and HTTP Streams are supported, I didn't get containers to work (see loadContainer in the raumserver documentation). The client's interface was designed to be as suitable for smartphones/tablets as possible, therefor some constraints with regards to line length etc. pp.<br />
+<img src="https://github.com/gutmensch/docker-raumserver/raw/master/images/screenshot.png" width="500" />
 
 ## Raumserver version and zone config
 ```

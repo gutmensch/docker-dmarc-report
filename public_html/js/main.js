@@ -1,5 +1,146 @@
-/* global Promise */
+/*
+ * Object and functions related to raumserver (client)
+ */
+window.raumfeld = new Object();
+window.raumfeld.raumserver = '/raumserver';
+window.raumfeld.zones = [];
+window.raumfeld.rooms = [];
+window.raumfeld.sources = [
+    {"type": "Uri", "name": "MPD", "value": "http://qnap:8800"},
+    {"type": "Playlist", "name": "The Blitz", "value": "TheBlitz"},
+    {"type": "Uri", "name": "Rock Antenne Alternative", "value": "http://mp3channels.webradio.rockantenne.de/alternative"},
+    {"type": "Uri", "name": "StarFM", "value": "http://85.25.209.152:80/berlin.mp3"},
+    {"type": "Uri", "name": "Berliner Rundfunk", "value": "http://stream.berliner-rundfunk.de/brf/mp3-128/internetradio"}
+];
 
+function getUrlParam(param) {
+    var url = new URL(window.location.href);
+    return decodeURIComponent(url.searchParams.get(param));
+}
+
+function getZoneName(zoneId) {
+    var name = "n/a";
+    window.raumfeld.zones.forEach(function(zone){
+       if (zone["UDN"] === zoneId)
+           name = zone["name"];
+    });
+    return name;
+}
+
+function getRaumfeldZoneStatus() {
+    return queryRaumserver('/data/getZoneConfig', {}, false);
+}
+
+function getRaumfeldRendererStatus() {
+    return queryRaumserver('/data/getRendererState', { listAll: true }, false);
+}
+
+function updateRaumfeldZoneStatus(zoneData) {
+    if (Array.isArray(zoneData)) {
+        // extract rooms
+        zoneData.forEach(function(zone) {
+            zone["rooms"].forEach(function(newRoom) {
+                var alreadyFound = false;
+                window.raumfeld.rooms.forEach(function(activeRoom) {
+                    alreadyFound = activeRoom["UDN"] === newRoom["UDN"] ? true : alreadyFound;
+                });
+                if (!alreadyFound) {
+                    newRoom["zoneUDN"] = zone["UDN"] !== "" ? zone["UDN"] : "none";
+                    newRoom["zoneName"] = zone["name"] !== "" ? zone["name"] : "none";
+                    window.raumfeld.rooms.push(newRoom);
+                }
+            });
+        });
+        // delete zones with empty names due to no zone
+        zoneData.forEach(function(zone, i) {
+            if (zone["name"] === "")
+                zoneData.splice(i, 1);
+        });
+        window.raumfeld.zones = zoneData;
+    }
+}
+
+function updateRaumfeldRendererStatus(rendererData) {
+    if (Array.isArray(rendererData)) {
+        // for sake of simplicity we just add missing values to zones and roomsa
+        // each room and zone should match values from the global vars
+        // window.raumfeld.zones and window.raumfeld.rooms
+        rendererData.forEach(function(renderer) {
+            renderer["roomStates"].forEach(function(newRoom) {
+                window.raumfeld.rooms.forEach(function(activeRoom) {
+                    if (activeRoom["UDN"] === newRoom["roomUdn"]) {
+                        activeRoom["isMute"] = newRoom["isMute"];
+                        activeRoom["isOnline"] = newRoom["isOnline"];
+                        activeRoom["transportState"] = newRoom["transportState"];
+                        activeRoom["volume"] = newRoom["volume"];
+                    }
+                });
+            });
+            window.raumfeld.zones.forEach(function(activeZone) {
+                if (activeZone["UDN"] === renderer["udn"]) {
+                    Object.keys(renderer).forEach(function (key){
+                        if (!activeZone.hasOwnProperty(key)) {
+                            activeZone[key] = renderer[key];
+                        }
+                    });
+                }
+            });
+        });
+    }
+}
+
+function queryRaumserver(uri, params, longPolling = false) {
+    var paramString = "?" + Object.keys(params).map(function (prop) {
+        return [prop, params[prop]].map(encodeURIComponent).join("=");
+    }).join("&");
+
+    var promise = new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.timeout = 2000;
+        xhr.open('GET', window.raumfeld.raumserver + uri + paramString, true);
+        xhr.ontimeout = function () {
+            console.log("Timeout talking to raumserver after 2s!");
+            reject();
+        };
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                // XXX: bug in raumserver for some requests no HTTP status returned
+                // this also leads to Browser JavaScript errors (invalid http response
+                // and JSON parse exception. However, the request still succeeds on the
+                // server! :-/
+                //if (xhr.status === 200) {
+                try {
+                    resolve(JSON.parse(xhr.responseText));
+                } catch (e) {
+                    console.log("Raumserver answer could not be parsed!");
+                    resolve(e);
+                }
+                //} else {
+                //    reject(xhr.status);
+                //    console.log("Querying raumserver failed!");
+                //}
+            }
+        };
+        xhr.send();
+    });
+    return promise;
+}
+
+function repeat(ms, func) {
+    new Promise(
+        r => (
+            setInterval(func, ms),
+            new Promise(
+                q => setTimeout(r, ms)
+            ).then(r)
+        )
+    )
+}
+
+
+/*
+ * Webapp related objects, helper functions and router
+ */
 window.HomeView = Backbone.View.extend({
 
     template: _.template($('#home').html()),
@@ -34,60 +175,40 @@ window.RoomView = Backbone.View.extend({
     }
 });
 
-function getUrlParam(param) {
-    var url = new URL(window.location.href);
-    return url.searchParams.get(param);
+function tableHead(className, title) {
+    th = document.createElement("th");
+    th.className = className;
+    th.innerHTML = title;
+    return th;
 }
 
-function queryRaumserver(url) {
-    // for params as hash
-    //var paramString = "?" + Object.keys(params).map(function (prop) {
-    //    return [prop, params[prop]].map(encodeURIComponent).join("=");
-    //}).join("&");
-    console.log(url);
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                try {
-                    result = JSON.parse(xhr.responseText);
-                    console.log(result);
-                    return result;
-                } catch (e) {
-                    console.log("Raumserver answer could not be parsed!");
-                }
-            }
-            // XXX: no http status code for some requests?!
-            //else {
-            //    console.log("Querying raumserver failed!");
-            //}
-        }
-    };
-    xhr.send();
-}
-
-
-function tableEntry(name, id, online, roomZoneId, currentZoneId, event) {
+function tableEntry(name, id, online, roomZoneId, isMute, transportState, currentZoneId, event) {
     online_icon = online ? "fa-check-circle-o" : "fa-circle-o";
     toggle_zone_icon = (roomZoneId === currentZoneId) ? "fa-toggle-on" : "fa-toggle-off";
 
     var tr = document.createElement("tr");
+    tr.className = "zone-room-list";
+    tr.id = id;
+
     var td_title = document.createElement("td");
-    td_title.className = "ui-btn-text";
-    td_title.innerHTML = "<button style=\"font-size:24px\">" + name + "</button>";
+    td_title.className = "ui-btn-text zone-room-list";
+    td_title.innerHTML = name;
     tr.appendChild(td_title);
     var td_online = document.createElement("td");
-    td_online.className = "ui-btn-text";
-    td_online.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa " + online_icon + "\"></i></button>";
+    td_online.className = "ui-btn-text zone-room-list";
+    td_online.innerHTML = "<i class=\"fa " + online_icon + "\"></i>";
     tr.appendChild(td_online);
     var td_toggle_zone = document.createElement("td");
-    td_toggle_zone.className = "ui-btn-text";
-    td_toggle_zone.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa " + toggle_zone_icon + "\"></i></button>";
+    td_toggle_zone.className = "ui-btn-text zone-room-list";
+    td_toggle_zone.innerHTML = "<button style=\"font-size:110%\"><i class=\"fa " + toggle_zone_icon + "\"></i></button>";
     tr.appendChild(td_toggle_zone);
+    var td_toggle_mute = document.createElement("td");
+    td_toggle_mute.className = "ui-btn-text zone-room-list";
+    td_toggle_mute.innerHTML = "<button style=\"font-size:110%\"><i onclick="+event+" class=\"fa fa-volume-off\"></i></button>";
+    tr.appendChild(td_toggle_mute);
     var td_status = document.createElement("td");
-    td_status.className = "ui-btn-text";
-    td_status.innerHTML = "foobar";
+    td_status.className = "ui-btn-text zone-room-list";
+    td_status.innerHTML = transportState;
     tr.appendChild(td_status);
     return tr;
 }
@@ -127,16 +248,12 @@ function listEntry(name, udn, placement, link) {
 
     var li_div_btn = document.createElement("div");
     li_div_btn.className = "ui-btn-inner ui-li";
-
     var li_div_btn_txt = document.createElement("div");
     li_div_btn_txt.className = "ui-btn-text";
-
     var li_span_arrow = document.createElement("span");
     li_span_arrow.className = "ui-icon ui-icon-arrow-r ui-icon-shadow";
-
     var link_a = document.createElement("a");
     link_a.className = "ui-link-inherit";
-
     var txt = document.createTextNode(name);
     link_a.href = link;
 
@@ -149,6 +266,18 @@ function listEntry(name, udn, placement, link) {
     return li;
 }
 
+function playerButton(awesomeIcon, raumfeldAction, raumfeldValues = {}) {
+    var button = document.createElement("td");
+    button.className = "ui-btn-text";
+    var button_style = document.createElement("button");
+    button_style.setAttribute("style", "font-size:110%");
+    var button_icon = document.createElement("i");
+    button_icon.className = "fa " + awesomeIcon;
+    button_icon.setAttribute("onclick","javascript:queryRaumserver('/controller/"+raumfeldAction+"',"+ JSON.stringify(raumfeldValues) +")");
+    button_style.appendChild(button_icon);
+    button.appendChild(button_style);
+    return button;
+}
 
 function sourceListEntry(name, type, source, placement, zoneId) {
 
@@ -181,27 +310,26 @@ function sourceListEntry(name, type, source, placement, zoneId) {
 
     li.className = li_init_css_class;
     li.setAttribute("data-theme", "c");
-    //li.setAttribute("id", udn);
+    li.name = name;
 
     var li_div_btn = document.createElement("div");
     li_div_btn.className = "ui-btn-inner ui-li";
-
     var li_div_btn_txt = document.createElement("div");
     li_div_btn_txt.className = "ui-btn-text";
-
     var li_span_arrow = document.createElement("span");
     li_span_arrow.className = "ui-icon ui-icon-arrow-r ui-icon-shadow";
-
     var link_a = document.createElement("a");
     link_a.className = "ui-link-inherit";
-
     var txt = document.createTextNode(name);
     
-    var paramString = '?id=' + encodeURIComponent(zoneId) + '&value=' + encodeURIComponent(source);
-    console.log("paramString: " + paramString);
-    var paramString1 = '?id=' + encodeURIComponent(zoneId);
-    console.log("paramString: " + paramString1);
-    link_a.href = "javascript:queryRaumserver('/raumserver/controller/load" + type + paramString + "');setTimeout(function(){queryRaumserver('/raumserver/controller/play" + paramString1 + "')},3000);";
+    var paramsLoad = {
+      id: zoneId,
+      value: source
+    };
+    var paramsPlay = {
+      id: zoneId
+    };
+    link_a.href = "javascript:queryRaumserver('/controller/load" + type + "',"+ JSON.stringify(paramsLoad) +");setTimeout(function(){queryRaumserver('/controller/play'," + JSON.stringify(paramsPlay) + ")},3000);";
 
     link_a.appendChild(txt);
     li_div_btn_txt.appendChild(link_a);
@@ -220,30 +348,6 @@ var AppRouter = Backbone.Router.extend({
         "room": "room"
     },
 
-    queryRaumserver:function(request) {
-        var promise = new Promise(function (resolve, reject) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/raumserver' + request, true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        try {
-                            resolve(JSON.parse(xhr.responseText));
-                        } catch (e) {
-                            reject(xhr.status);
-                            console.log("Raumserver answer could not be parsed!");
-                        }
-                    } else {
-                        reject(xhr.status);
-                        console.log("Querying raumserver failed!");
-                    }
-                }
-            };
-            xhr.send();
-        });
-        return promise;
-    },
-
     initialize:function() {
         // Handle back button throughout the application
         $('.back').live('click', function (event) {
@@ -252,235 +356,155 @@ var AppRouter = Backbone.Router.extend({
         });
         this.firstPage = true;
     },
-    
-    repeat: (ms, func) => new Promise(
-        r => (
-            setInterval(func, ms),
-            new Promise(
-                q => setTimeout(r, ms)
-            ).then(r)
-        )
-    ),
+
+    update:function(func) {
+        getRaumfeldZoneStatus()
+        .then(updateRaumfeldZoneStatus)
+        .then(func);
+
+        repeat(5000, () => new Promise(
+                () => getRaumfeldZoneStatus()
+                .then(updateRaumfeldZoneStatus)
+                .then(func))
+        );
+
+        // update raumfeld renderer states periodically
+        getRaumfeldRendererStatus()
+        .then(updateRaumfeldRendererStatus)
+        .then(func);
+
+        repeat(5000, () => new Promise(
+                () => getRaumfeldRendererStatus()
+                .then(updateRaumfeldRendererStatus)
+                .then(func))
+        );
+    },
 
     home:function() {
         this.changePage(new HomeView());
-        this.updatePlayer();
-
-        this.queryRaumserver('/data/getZoneConfig')
-        .then(this.updateHome)
-        .catch(error => console.log(error));
-
-        //this.repeat(5000, () => Promise.all([this.queryRaumserver('/data/getZoneConfig')])
-        //        .then(this.updateZones)
-        //        .catch(error => console.log(error))
-        //);
-        // polling of zones and rooms
-        this.repeat(5000, () => new Promise(
-                () => this.queryRaumserver('/data/getZoneConfig')
-                .then(this.updateHome)
-                .catch(error => console.log(error)))
-        );
+        this.update(this.updateHome);
     },
 
     zone:function() {
         this.changePage(new ZoneView());
-        
         this.updatePlayer();
-        
-        this.queryRaumserver('/data/getZoneConfig')
-        .then(this.updateZoneRoomConfig)
-        .catch(error => console.log(error));
-
-        //this.repeat(2000, () => new Promise(
-        //        () => this.queryRaumserver('/data/getZoneConfig')
-        //        .then(this.updateZoneRoomConfig)
-        //        .catch(error => console.log(error)))
-        //);
+        this.update(this.updateZone);
     },
 
     room:function() {
         this.changePage(new RoomView());
     },
 
-    updateZone:function(zoneData) {
-        var zoneId = getUrlParam("id");
-        
-        // update room list if applicable
-        var roomList = document.getElementById("roomlist");
-        var currentRooms = Array.from(roomList.children);
-        for (var i = 0; i < zoneData.length; i++) {
-            for (var j = 0; j < zoneData[i]["rooms"].length; j++) {
-                var found = false;
-                currentRooms.forEach(function (listedRoom) {
-                    if (listedRoom.id === zoneData[i]["rooms"][j]["UDN"])
-                        found = true;
-                });
-                if (!found) {
-                    var pos = (i === 0 && j === 0) ? "start" : (i === (zoneData.length - 1) && j === (zoneData[i]["rooms"].length - 1) ? "end" : "none");
-                    li = listEntry(
-                            zoneData[i]["rooms"][j]["name"],
-                            zoneData[i]["rooms"][j]["UDN"],
-                            pos, 
-                            "?id=" + encodeURIComponent(zoneData[i]["rooms"][j]["UDN"]) + "#room"
-                        );
-                    roomList.appendChild(li);
-                }
-            }
-        }  
-    },
-    
-    updateZoneRoomConfig:function(zoneData) {
-        var zoneId = getUrlParam("id");
-        var sourceList = document.getElementById("zone_source_list");
-        var sources = [
-            { "type": "Uri", "name": "MPD", "value": "http://qnap:8800" },
-            { "type": "Playlist", "name": "The Blitz", "value": "TheBlitz" },
-            { "type": "Uri", "name": "Rock Antenne Alternative", "value": "http://mp3channels.webradio.rockantenne.de/alternative" },
-            { "type": "Uri", "name": "StarFM", "value": "http://85.25.209.152:80/berlin.mp3" },
-            { "type": "Uri", "name": "Berliner Rundfunk", "value": "http://stream.berliner-rundfunk.de/brf/mp3-128/internetradio" }            
-        ];
-        
-        sources.forEach(function(source, i) {
-            var pos = (0 === (sources.length - 1)) ? "single" : ((i === 0) ? "start" : (i === (sources.length - 1) ? "end" : "none"));
-            li = sourceListEntry(
-                source["name"],
-                source["type"],
-                source["value"],
-                pos,
-                zoneId
-            );
-            sourceList.appendChild(li);
-        });
-       
-        // update room list if applicable
-        var roomList = document.getElementById("zone_room_list");
-        
-        var currentRooms = Array.from(roomList.children);
-        var allRooms = new Array();
-        
-        for (var i = 0; i < zoneData.length; i++) {
-            for (var j = 0; j < zoneData[i]["rooms"].length; j++) {
-                var room = zoneData[i]["rooms"][j];
-                room["zoneName"] = zoneData[i]["name"] !== "" ? zoneData[i]["name"] : "none";
-                room["zoneUDN"] = zoneData[i]["UDN"] !== "" ? zoneData[i]["UDN"] : "none";
-                allRooms.push(room);
-            }
-        }
-        
-        allRooms.forEach(function(room){
-            var found = false;
-            currentRooms.forEach(function(listedRoom) {
-                if (listedRoom.id === room["UDN"])
-                    found = true;
-            });
-            if (!found) {
-                entry = tableEntry(room["name"], room["UDN"], room["online"], room["zoneUDN"], zoneId, "foobarEvent");
-                roomList.appendChild(entry);
-            }
-        });
-    },
-    
-    updateHome:function(zoneData) {
+    updateHome:function() {
+        var raumfeldZones = window.raumfeld.zones;
+        var raumfeldRooms = window.raumfeld.rooms;
+
         // update room list if applicable
         var roomList = document.getElementById("home_room_list");
         var currentRooms = Array.from(roomList.children);
-        for (var i = 0; i < zoneData.length; i++) {
-            for (var j = 0; j < zoneData[i]["rooms"].length; j++) {
-                var found = false;
-                currentRooms.forEach(function (listedRoom) {
-                    if (listedRoom.id === zoneData[i]["rooms"][j]["UDN"])
-                        found = true;
-                });
-                if (!found) {
-                    var pos = (i === 0 && j === 0) ? "start" : (i === (zoneData.length - 1) && j === (zoneData[i]["rooms"].length - 1) ? "end" : "none");
-                    li = listEntry(
-                            zoneData[i]["rooms"][j]["name"],
-                            zoneData[i]["rooms"][j]["UDN"],
-                            pos,
-                            "?id=" + encodeURIComponent(zoneData[i]["rooms"][j]["UDN"]) + "#room"
-                        );
-                    roomList.appendChild(li);
-                }
-            }
-        }
 
-        // delete zones with empty names due to no zone
-        for (var i = 0; i < zoneData.length; i++)
-            if (zoneData[i].name === "")
-                zoneData.splice(i, 1);
+        raumfeldRooms.forEach(function(room, i){
+            var found = false;
+            currentRooms.forEach(function(listedRoom) {
+                found = listedRoom.id === room["UDN"] ? true : found;
+            });
+            if (!found) {
+                var pos = (0 === (raumfeldRooms.length - 1)) ? "single" : ((i === 0) ? "start" : (i === (raumfeldRooms.length - 1) ? "end" : "none"));
+                li = listEntry(room["name"], room["UDN"], pos, "?id=" + encodeURIComponent(room["UDN"]) + "#room");
+                roomList.appendChild(li);
+            }
+        });
 
         // update zone list if applicable
         var zoneList = document.getElementById("home_zone_list");
         var currentZones = Array.from(zoneList.children);
-        for (var i = 0; i < zoneData.length; i++) {
+
+        raumfeldZones.forEach(function(zone, i){
             var found = false;
             currentZones.forEach(function (listedZone) {
-                if (listedZone.id === zoneData[i]["UDN"])
-                    found = true;
+                found = listedZone.id === zone["UDN"] ? true : found;
             });
             if (!found) {
-                var pos = (0 === (zoneData.length - 1)) ? "single" : ((i === 0) ? "start" : (i === (zoneData.length - 1) ? "end" : "none"));
-                li = listEntry(
-                    zoneData[i]["name"],
-                    zoneData[i]["UDN"],
-                    pos,
-                    "?id=" + encodeURIComponent(zoneData[i]["UDN"]) + "#zone"
-                );
+                var pos = (0 === (raumfeldZones.length - 1)) ? "single" : ((i === 0) ? "start" : (i === (raumfeldZones.length - 1) ? "end" : "none"));
+                li = listEntry(zone["name"], zone["UDN"], pos, "?id=" + encodeURIComponent(zone["UDN"]) + "#zone");
                 zoneList.appendChild(li);
             }
-        }
+        });
     },
 
-    updatePlayer: function () {
+   updateZone:function() {
+        var zoneId = getUrlParam("id");
+        var raumfeldRooms = window.raumfeld.rooms;
+        var sources = window.raumfeld.sources;
+
+        var sourceList = document.getElementById("zone_source_list");
+        var currentSources = Array.from(sourceList.children);
+
+        sources.forEach(function(source, i) {
+            var found = false;
+            currentSources.forEach(function(listedSource) {
+                found = listedSource.name === source["name"] ? true : found;
+            });
+            if (!found) {
+                var pos = (0 === (sources.length - 1)) ? "single" : ((i === 0) ? "start" : (i === (sources.length - 1) ? "end" : "none"));
+                li = sourceListEntry(source["name"], source["type"], source["value"], pos, zoneId);
+                sourceList.appendChild(li);
+            }
+        });
+
+        // update room list if applicable
+        var roomList = document.getElementById("zone_room_list");
+        var currentRooms = Array.from(roomList.children);
+
+        // XXX: need smarter update function here...
+        roomList.innerHTML = "";
+        roomList.appendChild(tableHead('zone-room-list', 'Name'));
+        roomList.appendChild(tableHead('zone-room-list', 'On'));
+        roomList.appendChild(tableHead('zone-room-list', 'Zone'));
+        roomList.appendChild(tableHead('zone-room-list', 'Mute'));
+        roomList.appendChild(tableHead('zone-room-list', 'Status'));
+
+        raumfeldRooms.forEach(function(room){
+            var found = false;
+            currentRooms.forEach(function(listedRoom) {
+                found = listedRoom.id === room["UDN"] ? true : found;
+            });
+            //if (!found) {
+                var params = {
+                    id: room["UDN"]
+                };
+                entry = tableEntry(
+                    room["name"],
+                    room["UDN"],
+                    room["online"],
+                    room["zoneUDN"],
+                    room["isMute"],
+                    room["transportState"],
+                    zoneId,
+                    "javascript:queryRaumserver('/controller/toggleMute'," + JSON.stringify(params) + ")"
+                );
+                roomList.appendChild(entry);
+            //}
+        });
+
+        document.getElementById("zone_title_status").innerHTML =
+            '<a href="#" data-icon="back" class="back ui-btn-left ui-btn ui-btn-up-a ui-btn-icon-left ui-btn-corner-all ui-shadow" data-theme="a"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Back</span><span class="ui-icon ui-icon-back ui-icon-shadow"></span></span></a>'+
+            '<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Zone: '+ getZoneName(zoneId) +'</h1>';
+    },
+
+    updatePlayer: function() {
         var player = document.getElementById("player_control");
         var player_row = document.createElement("tr");
         player.appendChild(player_row);
-
-        // http://fontawesome.io/cheatsheet/
-        var player_col_back = document.createElement("td");
-        player_col_back.className = "ui-btn-text";
-        player_col_back.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-backward\"></i></button>";
-        player_row.appendChild(player_col_back);
-
-        var player_col_play = document.createElement("td");
-        player_col_play.className = "ui-btn-text";
-        player_col_play.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-play\"></i></button>";
-        player_row.appendChild(player_col_play);
-
-        var player_col_paus = document.createElement("td");
-        player_col_paus.className = "ui-btn-text";
-        player_col_paus.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-pause\"></i></button>";
-        player_row.appendChild(player_col_paus);
-
-        var player_col_forw = document.createElement("td");
-        player_col_forw.className = "ui-btn-text";
-        player_col_forw.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-forward\"></i></button>";
-        player_row.appendChild(player_col_forw);
-
-        var player_col_stop = document.createElement("td");
-        player_col_stop.className = "ui-btn-text";
-        player_col_stop.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-stop\"></i></button>";
-        player_row.appendChild(player_col_stop);
-
-        var player_col_rept = document.createElement("td");
-        player_col_rept.className = "ui-btn-text";
-        player_col_rept.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-repeat\"></i></button>";
-        player_row.appendChild(player_col_rept);
-
-        var player_col_vold = document.createElement("td");
-        player_col_vold.className = "ui-btn-text";
-        player_col_vold.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-volume-down\"></i></button>";
-        player_row.appendChild(player_col_vold);
-
-        var player_col_volu = document.createElement("td");
-        player_col_volu.className = "ui-btn-text";
-        player_col_volu.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-volume-up\"></i></button>";
-        player_row.appendChild(player_col_volu);
-
-        var player_col_volo = document.createElement("td");
-        player_col_volo.className = "ui-btn-text";
-        player_col_volo.innerHTML = "<button style=\"font-size:24px\"><i class=\"fa fa-volume-off\"></i></button>";
-        player_row.appendChild(player_col_volo);
+        player_row.appendChild(playerButton('fa-backward','prev',{id: getUrlParam('id')}));
+        player_row.appendChild(playerButton('fa-play','play',{id: getUrlParam('id')}));
+        player_row.appendChild(playerButton('fa-pause','pause',{id: getUrlParam('id')}));
+        player_row.appendChild(playerButton('fa-forward','next',{id: getUrlParam('id')}));
+        player_row.appendChild(playerButton('fa-stop','stop',{id: getUrlParam('id')}));
+        player_row.appendChild(playerButton('fa-repeat','setPlayMode',{id: getUrlParam('id'), mode:'REPEAT_ALL'}));
+        player_row.appendChild(playerButton('fa-volume-down','volumeDown',{id: getUrlParam('id'), scope:'zone', value:'2'}));
+        player_row.appendChild(playerButton('fa-volume-up','volumeUp',{id: getUrlParam('id'), scope:'zone', value:'2'}));
+        player_row.appendChild(playerButton('fa-volume-off','toggleMute',{id: getUrlParam('id'), scope:'zone'}));
     },
 
     changePage: function (page) {

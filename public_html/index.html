@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/jquery.mobile-1.0.1.min.css"/>
     <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="css/raumserver_app.css"/>
 
     <!-- The Templates -->
     <script type="text/template" id="home">
@@ -14,8 +15,6 @@
         </div>
 
         <div data-role="content">
-            <h3>Controller</h3>
-            <table id="player_control"></table>
             <h3>Manage Zones</h3>
             <ul id="home_zone_list" data-role="listview" data-inset="true">
             </ul>
@@ -28,7 +27,7 @@
     
     <script type="text/template" id="zone">
 
-        <div data-role="header">
+        <div id="zone_title_status" data-role="header">
             <a href="#" data-icon="back" class="back ui-btn-left">Back</a>
             <h1>Zone Configuration</h1>
         </div>
@@ -41,7 +40,6 @@
             </ul>            
             <h3>Rooms</h3>
             <table id="zone_room_list">
-            <th>Name</th><th>Online</th><th>Toggle Zone</th><th>Status</th>
             </table>
         </div>
 
@@ -49,7 +47,7 @@
     
     <script type="text/template" id="room">
 
-        <div data-role="header">
+        <div id="room_title_status" data-role="header">
             <a href="#" data-icon="back" class="back ui-btn-left">Back</a>
             <h1>Room Configuration</h1>
         </div>

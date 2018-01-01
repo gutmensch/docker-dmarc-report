@@ -1,0 +1,22 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 28, 2017, 11:19:01 AM
+    Author     : jazz
+*/
+
+th.zone-room-list {
+    padding: 2px;
+    border-spacing: 2px;
+}
+td.zone-room-list {
+    padding-left: 2px;
+    padding-right: 2px;
+    text-align: center;
+}
+tr.zone-room-list {
+    background: #D0D0D0;
+}

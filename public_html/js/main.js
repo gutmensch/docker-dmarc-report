@@ -2,7 +2,7 @@
  * Object and functions related to raumserver (client)
  */
 window.raumfeld = new Object();
-window.raumfeld.raumserver = 'http://qnap:3535/raumserver';
+window.raumfeld.raumserver = '/raumserver';
 window.raumfeld.zones = [];
 window.raumfeld.rooms = [];
 window.raumfeld.sources = [

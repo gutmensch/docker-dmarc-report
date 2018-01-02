@@ -113,10 +113,10 @@ function queryRaumserver(uri, params, longPolling = false) {
             reject();
         };
         xhr.onerror = function() {
-            updateTitle('home_title_status', 'Raumserver App (disconnected)');
-            updateTitle('zone_title_status', 'Zone (disconnected)');
-            updateTitle('room_title_status', 'Room (disconnected)');
-            reject();
+            //updateTitle('home_title_status', 'Raumserver App (disconnected)');
+            //updateTitle('zone_title_status', 'Zone (disconnected)');
+            //updateTitle('room_title_status', 'Room (disconnected)');
+            //reject();
         };
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {

@@ -175,6 +175,23 @@ window.RoomView = Backbone.View.extend({
     }
 });
 
+function tableHeadRow(className) {
+    head = document.createElement("thead");
+    head.classname = className;
+    row = document.createElement("tr");
+    row.className = className;
+
+    row.appendChild(tableHead('zone-room-list', 'Name'));
+    row.appendChild(tableHead('zone-room-list', 'On'));
+    row.appendChild(tableHead('zone-room-list', 'Zone'));
+    row.appendChild(tableHead('zone-room-list', 'Mute'));
+    row.appendChild(tableHead('zone-room-list', 'Status'));
+
+    head.appendChild(row);
+
+    return head;
+}
+
 function tableHead(className, title) {
     th = document.createElement("th");
     th.className = className;
@@ -182,7 +199,7 @@ function tableHead(className, title) {
     return th;
 }
 
-function tableEntry(name, id, online, roomZoneId, isMute, transportState, currentZoneId, event) {
+function tableEntry(name, id, online, roomZoneId, isMute, transportState = "n/a", currentZoneId, event) {
     online_icon = online ? "fa-check-circle-o" : "fa-circle-o";
     toggle_zone_icon = (roomZoneId === currentZoneId) ? "fa-toggle-on" : "fa-toggle-off";
 
@@ -270,7 +287,7 @@ function playerButton(awesomeIcon, raumfeldAction, raumfeldValues = {}) {
     var button = document.createElement("td");
     button.className = "ui-btn-text";
     var button_style = document.createElement("button");
-    button_style.setAttribute("style", "font-size:110%");
+    button_style.setAttribute("style", "font-size:108%");
     var button_icon = document.createElement("i");
     button_icon.className = "fa " + awesomeIcon;
     button_icon.setAttribute("onclick","javascript:queryRaumserver('/controller/"+raumfeldAction+"',"+ JSON.stringify(raumfeldValues) +")");
@@ -458,12 +475,9 @@ var AppRouter = Backbone.Router.extend({
 
         // XXX: need smarter update function here...
         roomList.innerHTML = "";
-        roomList.appendChild(tableHead('zone-room-list', 'Name'));
-        roomList.appendChild(tableHead('zone-room-list', 'On'));
-        roomList.appendChild(tableHead('zone-room-list', 'Zone'));
-        roomList.appendChild(tableHead('zone-room-list', 'Mute'));
-        roomList.appendChild(tableHead('zone-room-list', 'Status'));
-
+        roomList.appendChild(tableHeadRow('zone-room-list-head'));
+        tbody = document.createElement("tbody");
+        roomList.appendChild(tbody);
         raumfeldRooms.forEach(function(room){
             var found = false;
             currentRooms.forEach(function(listedRoom) {
@@ -483,7 +497,7 @@ var AppRouter = Backbone.Router.extend({
                     zoneId,
                     "javascript:queryRaumserver('/controller/toggleMute'," + JSON.stringify(params) + ")"
                 );
-                roomList.appendChild(entry);
+                tbody.appendChild(entry);
             //}
         });
 

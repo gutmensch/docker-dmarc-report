@@ -10,19 +10,34 @@ and open the template in the editor.
 
 th.zone-room-list {
     padding: 2px;
-    border-spacing: 2px;
+    border-spacing: 0px;
 }
+
 td.zone-room-list {
     padding-left: 2px;
     padding-right: 2px;
     text-align: center;
 }
+
 td.zone-room-list-status {
-    padding-left: 2px;
-    padding-right: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
     text-align: center;
     font-style: italic;
 }
-tr.zone-room-list {
-    background: #D0D0D0;
+
+.zone-room-list-head {
+    background: #E2E2E2;
+}
+
+table.zone-room-list {
+    border-radius:8px;
+    border:1px solid #CCCCCC;
+    background: #efefef;
+}
+
+table.player-control {
+    border-radius:8px;
+    border:1px solid #CCCCCC;
+    background: #efefef;
 }

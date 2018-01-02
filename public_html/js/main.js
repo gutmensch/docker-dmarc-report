@@ -2,7 +2,7 @@
  * Object and functions related to raumserver (client)
  */
 window.raumfeld = new Object();
-window.raumfeld.raumserver = '/raumserver';
+window.raumfeld.raumserver = 'http://qnap:3535/raumserver';
 window.raumfeld.zones = [];
 window.raumfeld.rooms = [];
 window.raumfeld.sources = [
@@ -89,6 +89,14 @@ function updateRaumfeldRendererStatus(rendererData) {
     }
 }
 
+function updateTitle(id, msg) {
+    if (document.getElementById(id)) {
+        document.getElementById(id).innerHTML =
+            '<a href="#" data-icon="back" class="back ui-btn-left ui-btn ui-btn-up-a ui-btn-icon-left ui-btn-corner-all ui-shadow" data-theme="a"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Back</span><span class="ui-icon ui-icon-back ui-icon-shadow"></span></span></a>'+
+            '<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">'+msg+'</h1>';
+    }
+}
+
 function queryRaumserver(uri, params, longPolling = false) {
     var paramString = "?" + Object.keys(params).map(function (prop) {
         return [prop, params[prop]].map(encodeURIComponent).join("=");
@@ -99,7 +107,15 @@ function queryRaumserver(uri, params, longPolling = false) {
         xhr.timeout = 2000;
         xhr.open('GET', window.raumfeld.raumserver + uri + paramString, true);
         xhr.ontimeout = function () {
-            console.log("Timeout talking to raumserver after 2s!");
+            updateTitle('home_title_status', 'Raumserver App (timeout)');
+            updateTitle('zone_title_status', 'Zone (timeout)');
+            updateTitle('room_title_status', 'Room (timeout)');
+            reject();
+        };
+        xhr.onerror = function() {
+            updateTitle('home_title_status', 'Raumserver App (disconnected)');
+            updateTitle('zone_title_status', 'Zone (disconnected)');
+            updateTitle('room_title_status', 'Room (disconnected)');
             reject();
         };
         xhr.onreadystatechange = function () {
@@ -501,9 +517,7 @@ var AppRouter = Backbone.Router.extend({
             //}
         });
 
-        document.getElementById("zone_title_status").innerHTML =
-            '<a href="#" data-icon="back" class="back ui-btn-left ui-btn ui-btn-up-a ui-btn-icon-left ui-btn-corner-all ui-shadow" data-theme="a"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Back</span><span class="ui-icon ui-icon-back ui-icon-shadow"></span></span></a>'+
-            '<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Zone: '+ getZoneName(zoneId) +'</h1>';
+        updateTitle('zone_title_status', 'Zone: ' + getZoneName(zoneId));
     },
 
     updatePlayer: function() {

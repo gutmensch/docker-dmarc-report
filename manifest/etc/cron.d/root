@@ -1,1 +1,1 @@
-*/5 * * * * /usr/bin/dmarcts-report-parser.pl -i -d -r
+@hourly /usr/bin/dmarcts-report-parser.pl -i -d -r

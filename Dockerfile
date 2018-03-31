@@ -12,9 +12,8 @@ RUN set -x \
       && wget -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
       && wget -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
       && unzip parser.zip && cp -v dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
-      && unzip viewer.zip && cp -v dmarcts-report-viewer-master/* /var/www/html/ && rm -f viewer.zip \
-      && rm -f /var/www/html/index.php \
-      && sed -i "1s/^/body { font-family: Sans-Serif; }\n/" /var/www/html/default.css \
+      && unzip viewer.zip && mv dmarcts-report-viewer-master /var/www/viewer && rm -f viewer.zip \
+      && sed -i "1s/^/body { font-family: Sans-Serif; }\n/" /var/www/viewer/default.css \
       && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
       && for i in \
         IO::Compress::Gzip \
@@ -34,7 +33,8 @@ RUN set -x \
         PerlIO::gzip \
         IO::Socket::SSL \
         ; do cpan install $i; done \
-      && sed -i 's/.*index index.php index.html index.htm;/index dmarcts-report-viewer.php;/g' /etc/nginx/conf.d/default.conf \
+      && sed -i 's%.*root /var/www/html;%        root /var/www/viewer;%g' /etc/nginx/conf.d/default.conf \
+      && sed -i 's/.*index index.php index.html index.htm;/        index dmarcts-report-viewer.php;/g' /etc/nginx/conf.d/default.conf \
       && chmod 755 /entrypoint.sh
 
 EXPOSE 443 80

@@ -13,6 +13,7 @@ RUN set -x \
       && wget -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
       && unzip parser.zip && cp -v dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
       && unzip viewer.zip && cp -v dmarcts-report-viewer-master/* /var/www/html/ && rm -f viewer.zip \
+      && rm -f /var/www/html/index.php \
       && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
       && for i in \
         IO::Compress::Gzip \

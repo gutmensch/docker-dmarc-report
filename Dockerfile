@@ -1,34 +1,40 @@
-FROM debian:jessie-slim
+FROM boxedcode/alpine-nginx-php-fpm:latest
 
 MAINTAINER Robert Schumann <gutmensch@n-os.org>
 
-ENV raumserver_release "http://bassmaniacs.com/data/appBinaries/raumserver/currentVersion"
-ENV raumserver_http "3535"
+ENV REPORT_PARSER_SOURCE="https://github.com/techsneeze/dmarcts-report-parser/archive/master.zip" \
+    REPORT_VIEWER_SOURCE="https://github.com/techsneeze/dmarcts-report-viewer/archive/master.zip"
 
-ENV PATH /opt:$PATH
-ENV DEBIAN_FRONTEND noninteractive
-
-WORKDIR /opt
-
-ADD start.sh /opt/start.sh
-ADD settings.xml /opt/settings.xml
-ADD public_html /opt/public_html
+COPY ./manifest/ /
 
 RUN set -x \
-      && apt-get update \
-      && apt-get install -y --no-install-recommends wget unzip binutils libunwind8 \
-      && rm -rf /var/lib/apt/lists/* \
-      && wget -q --no-check-certificate $raumserver_release/raumserverDaemon_linux_X64.zip \
-      && unzip raumserverDaemon_linux_X64.zip -d raumserver && rm -f raumserverDaemon_linux_X64.zip \
-      && mv raumserver/settings.xml raumserver/settings.xml.dist \
-      && sed -i "s%RAUMSERVER_HTTP%"$raumserver_http"%" settings.xml \
-      && mv settings.xml raumserver/ \
-      && mv raumserver/docroot raumserver/docroot.dist \
-      && mv public_html raumserver/docroot \
-      && strip -v raumserver/raumsrvDaemon \
-      && apt-get autoremove -y wget unzip binutils \
-      && chmod +x start.sh
+      && wget -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
+      && wget -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
+      && unzip parser.zip && mv dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
+      && mv /usr/bin/dmarcts-report-parser.conf.sample /usr/bin/dmarcts-report-parser.conf \
+      && unzip viewer.zip && mv dmarcts-report-viewer-master/* /var/www/html/ && rm -f viewer.zip \
+      && mv /var/www/html/dmarcts-report-viewer-config.php.sample /var/www/html/dmarcts-report-viewer-config.php \
+      && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
+      && for i in \
+        IO::Compress::Gzip \
+        Getopt::Long \
+	Mail::IMAPClient \
+	Mail::Mbox::MessageParser \
+        MIME::Base64 \
+        MIME::Words \
+        MIME::Parser \
+        MIME::Parser::Filer \
+        XML::Simple \
+        DBI \
+	Socket \
+	Socket6 \
+        PerlIO::gzip \
+        IO::Socket::SSL \
+        ; do cpan install $i; done \
+      && sed -i 's/.*index index.php index.html index.htm;/index dmarcts-report-viewer.php;/g' /etc/nginx/conf.d/default.conf \
+      && chmod 755 /entrypoint.sh
 
-EXPOSE $raumserver_http
+EXPOSE 443 80
 
-CMD ["start.sh"]
+CMD ["/bin/bash", "/entrypoint.sh"]
+

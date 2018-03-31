@@ -11,8 +11,8 @@ RUN set -x \
       && apk add expat-dev mariadb-dev \
       && wget -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
       && wget -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
-      && unzip parser.zip && mv dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
-      && unzip viewer.zip && mv dmarcts-report-viewer-master/* /var/www/html/ && rm -f viewer.zip \
+      && unzip parser.zip && cp -v dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
+      && unzip viewer.zip && cp -v dmarcts-report-viewer-master/* /var/www/html/ && rm -f viewer.zip \
       && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
       && for i in \
         IO::Compress::Gzip \

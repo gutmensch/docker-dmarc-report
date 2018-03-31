@@ -21,7 +21,7 @@ if [[ -v TEMPLATE_NGINX_HTML ]] ; then
     value=$(echo "$i" | cut -d'=' -f2)
     if [[ "$variable" != '%s' ]] ; then
       replace='\$\$_'${variable}'_\$\$'
-      find /var/www/html -type f -not -path "/var/www/html/vendor/*" -exec sed -i -e 's#'${replace}'#'${value}'#g' {} \;
+      find /var/www/viewer -type f -exec sed -i -e 's#'${replace}'#'${value}'#g' {} \;
     fi
   done
 fi

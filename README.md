@@ -7,3 +7,8 @@ This image is intended to combine a dmarc report parser (see https://github.com/
 docker pull gutmensch/dmarc-report
 docker run -ti gutmensch/dmarc-report
 ```
+
+## Versions for last build latest
+dmarcts report viewer: 2018-03-31
+dmarcts report parser: 2018-03-31
+

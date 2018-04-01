@@ -11,14 +11,16 @@ It fetches dmarc report mails regularly from an IMAP server, stores them into a 
 4. Access port 80 on the container (or 443) or put it behind a reverse proxy to view reports
 ```
 docker pull gutmensch/dmarc-report
-docker run -ti gutmensch/dmarc-report
+docker run -e ... -ti gutmensch/dmarc-report
 ```
 
 ## Versions for last build latest
 dmarcts report viewer: 2018-03-31
+
 dmarcts report parser: 2018-03-31
 
 ## Sample docker compose / Environment variables
+The variables should be self-explanatory.
 ```
 dmarc-report:
   image: "gutmensch/dmarc-report:latest"

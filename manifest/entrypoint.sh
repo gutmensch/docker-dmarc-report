@@ -41,7 +41,7 @@ fi
 
 if [[ -v PARSER_PROCESS_INTERVAL ]] ; then
   cmd=$(awk '{$1=""; print $0}' /etc/cron.d/root)
-  echo -n "${PARSER_PROCESS_INTERVAL} ${cmd}" > /etc/cron.d/root
+  echo "${PARSER_PROCESS_INTERVAL} ${cmd}" > /etc/cron.d/root
 fi
 
 # Start supervisord and services

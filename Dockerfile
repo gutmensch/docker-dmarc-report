@@ -8,6 +8,7 @@ ENV REPORT_PARSER_SOURCE="https://github.com/techsneeze/dmarcts-report-parser/ar
 COPY ./manifest/ /
 
 RUN set -x \
+      && apk update \
       && apk add expat-dev mariadb-dev \
       && wget -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
       && wget -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
@@ -33,6 +34,8 @@ RUN set -x \
         PerlIO::gzip \
         IO::Socket::SSL \
         ; do cpan install $i; done \
+      && apk del mariadb-dev expat-dev \
+      && apk add mariadb-client-libs \
       && sed -i 's%.*root /var/www/html;%        root /var/www/viewer;%g' /etc/nginx/conf.d/default.conf \
       && sed -i 's/.*index index.php index.html index.htm;/        index dmarcts-report-viewer.php;/g' /etc/nginx/conf.d/default.conf \
       && chmod 755 /entrypoint.sh

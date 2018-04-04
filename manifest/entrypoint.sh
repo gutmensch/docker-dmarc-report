@@ -40,7 +40,8 @@ if [[ -v TEMPLATE_PERL_CONF ]] ; then
 fi
 
 if [[ -v PARSER_PROCESS_INTERVAL ]] ; then
-  echo "${PARSER_PROCESS_INTERVAL} /usr/bin/dmarcts-report-parser.pl -i -d -r" > /etc/cron.d/root
+  cmd=$(awk '{$1=""; print $0}' /etc/cron.d/root)
+  echo -n "${PARSER_PROCESS_INTERVAL} ${cmd}" > /etc/cron.d/root
 fi
 
 # Start supervisord and services

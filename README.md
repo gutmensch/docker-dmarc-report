@@ -20,7 +20,7 @@ dmarcts report viewer: 2018-03-31
 dmarcts report parser: 2018-03-31
 
 ## Sample docker compose / Environment variables
-The variables should be self-explanatory.
+The variables should be self-explanatory. Make sure to create the DB and IMAP folders before the cron job runs!
 ```
 dmarc-report:
   image: "gutmensch/dmarc-report:latest"
@@ -38,6 +38,5 @@ dmarc-report:
     - "PARSER_IMAP_PASS=foobar"
     - "PARSER_IMAP_READ_FOLDER=Inbox"
     - "PARSER_IMAP_MOVE_FOLDER=processed"
-    - "PARSER_PROCESS_INTERVAL=@hourly"
 ```
 

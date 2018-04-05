@@ -1,1 +1,2 @@
-@hourly /usr/bin/dmarcts-report-parser.pl -i -d -r 1>>/var/log/nginx/dmarc-reports.log 2>&1
+15 * * * * /usr/bin/dmarcts-report-parser.pl -i -d -r 1>>/var/log/nginx/dmarc-reports.log 2>&1
+

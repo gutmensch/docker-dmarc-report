@@ -1,4 +1,4 @@
-FROM boxedcode/alpine-nginx-php-fpm:latest
+FROM boxedcode/alpine-nginx-php-fpm:v1.7.2
 
 MAINTAINER Robert Schumann <gutmensch@n-os.org>
 
@@ -43,4 +43,3 @@ RUN set -x \
 EXPOSE 443 80
 
 CMD ["/bin/bash", "/entrypoint.sh"]
-

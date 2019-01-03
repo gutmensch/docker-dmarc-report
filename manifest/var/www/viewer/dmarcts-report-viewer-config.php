@@ -4,10 +4,10 @@
 // ### configuration ##################################################
 // ####################################################################
 
-$dbhost='$$_REPORT_DB_HOST_$$';
-$dbname='$$_REPORT_DB_NAME_$$';
-$dbuser='$$_REPORT_DB_USER_$$';
-$dbpass='$$_REPORT_DB_PASS_$$';
+$dbhost=getenv('REPORT_DB_HOST');
+$dbname=getenv('REPORT_DB_NAME');
+$dbuser=getenv('REPORT_DB_USER');
+$dbpass=getenv('REPORT_DB_PASS');
 $dbport='3306';
 
 $cssfile="default.css";

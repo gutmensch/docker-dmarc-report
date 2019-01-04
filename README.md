@@ -5,7 +5,11 @@ This image is intended to combine a dmarc report parser (see https://github.com/
 It fetches dmarc report mails regularly from an IMAP server, stores them into a MySQL DB and visualizes them via Webserver/PHP module.
 
 ## Howto
-1. Create a _dmarc.example.com TXT DNS record for your domain, containg a mail address (IMAP postbox)
+1. Create a _dmarc.example.com TXT DNS record for your domain, containg an IMAP postbox, e.g.
+```
+17:18 $ dig TXT _dmarc.schumann.link +short
+"v=DMARC1\; p=quarantine\; fo=1\; rua=mailto:dmarc@schumann.link\; ruf=mailto:dmarc@schumann.link\; adkim=s\; aspf=s\;"
+```
 2. Create a MySQL Database and a user for this service
 3. Run this docker image with below mentioned env vars
 4. Access port 80 on the container (or 443) or put it behind a reverse proxy to view reports
@@ -15,9 +19,9 @@ docker run -e ... -ti gutmensch/dmarc-report
 ```
 
 ## Versions for last build latest
-dmarcts report viewer: 2018-03-31
+dmarcts report viewer: 2019-01-04
 
-dmarcts report parser: 2018-03-31
+dmarcts report parser: 2019-01-04
 
 ## Sample docker compose / Environment variables
 The variables should be self-explanatory. Make sure to create the DB and IMAP folders before the cron job runs!

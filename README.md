@@ -27,8 +27,6 @@ dmarc-report:
   hostname: dmarc-report
   container_name: dmarc-report
   environment:
-    - "TEMPLATE_NGINX_HTML=1"
-    - "TEMPLATE_PERL_CONF=1"
     - "REPORT_DB_HOST=mysql"
     - "REPORT_DB_NAME=dmarc_report"
     - "REPORT_DB_USER=dmarc_report"
@@ -38,5 +36,12 @@ dmarc-report:
     - "PARSER_IMAP_PASS=foobar"
     - "PARSER_IMAP_READ_FOLDER=Inbox"
     - "PARSER_IMAP_MOVE_FOLDER=processed"
+```
+
+## Optional extended configuration
+Use SSL instead of default TLS. Set both to 0 to turn off encryption. (not recommended)
+```
+    - "PARSER_IMAP_SSL=1"
+    - "PARSER_IMAP_TLS=0"
 ```
 

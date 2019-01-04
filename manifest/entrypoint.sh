@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Display PHP error's or not
 if [[ "$ERRORS" != "1" ]] ; then
   sed -i -e "s/error_reporting =.*=/error_reporting = E_ALL/g" /usr/etc/php.ini

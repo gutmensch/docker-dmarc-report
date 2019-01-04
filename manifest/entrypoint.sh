@@ -13,5 +13,10 @@ fi
 procs=$(cat /proc/cpuinfo | grep processor | wc -l)
 sed -i -e "s/worker_processes 5/worker_processes $procs/" /etc/nginx/nginx.conf
 
+# Copy important env vars for PHP-FPM to access
+PHP_ENV_FILE="/usr/etc/php-fpm.d/${PHP_ENV_FILE:-env.conf}"
+echo '[www]' > "$PHP_ENV_FILE"
+env | grep -e 'REPORT_DB_HOST' -e 'REPORT_DB_NAME' -e 'REPORT_DB_USER' -e 'REPORT_DB_PASS' | sed "s/\(.*\)=\(.*\)/env[\1]='\2'/" >> "$PHP_ENV_FILE"
+
 # Start supervisord and services
 /usr/bin/supervisord -n -c /etc/supervisord.conf

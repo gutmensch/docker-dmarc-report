@@ -24,27 +24,44 @@ dmarcts report viewer: 2019-01-04
 dmarcts report parser: 2019-01-04
 
 ## Sample docker compose / Environment variables
-The variables should be self-explanatory. Make sure to create the DB and IMAP folders before the cron job runs!
-```
-dmarc-report:
-  image: "gutmensch/dmarc-report:latest"
-  hostname: dmarc-report
-  container_name: dmarc-report
-  environment:
-    - "REPORT_DB_HOST=mysql"
-    - "REPORT_DB_NAME=dmarc_report"
-    - "REPORT_DB_USER=dmarc_report"
-    - "REPORT_DB_PASS=foobar"
-    - "PARSER_IMAP_SERVER_WITH_PORT=mail:143"
-    - "PARSER_IMAP_USER=foobar@example.com
-    - "PARSER_IMAP_PASS=foobar"
-    - "PARSER_IMAP_READ_FOLDER=Inbox"
-    - "PARSER_IMAP_MOVE_FOLDER=processed"
+The variables should be self-explanatory. Make sure to create the IMAP folders before the cron job runs!
+
+**docker-compose.yml**
+```yaml
+version: '3.6'
+
+services:
+  dmarc-report:
+    image: "gutmensch/dmarc-report:latest"
+    hostname: dmarc-report
+    container_name: dmarc-report
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    environment:
+      - "REPORT_DB_HOST=db"
+      - "REPORT_DB_NAME=dmarc_report"
+      - "REPORT_DB_USER=dmarc_report"
+      - "REPORT_DB_PASS=dbpassword"
+      - "PARSER_IMAP_SERVER_WITH_PORT=mail:143"
+      - "PARSER_IMAP_USER=foobar@example.com"
+      - "PARSER_IMAP_PASS=foobar"
+      - "PARSER_IMAP_READ_FOLDER=Inbox"
+      - "PARSER_IMAP_MOVE_FOLDER=processed"
+
+  db:
+    image: mariadb:10
+    environment:
+      - "MYSQL_ROOT_PASSWORD=dbrootpassword"
+      - "MYSQL_DATABASE=dmarc_report"
+      - "MYSQL_USER=dmarc_report"
+      - "MYSQL_PASSWORD=dbpassword"
 ```
 
 ## Optional extended configuration
 Use SSL instead of default TLS. Set both to 0 to turn off encryption. (not recommended)
-```
+```yaml
     - "PARSER_IMAP_SSL=1"
     - "PARSER_IMAP_TLS=0"
 ```

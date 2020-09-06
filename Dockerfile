@@ -9,14 +9,16 @@ COPY ./manifest/ /
 
 RUN set -x \
       && apk update \
-      && apk add expat-dev mariadb-dev \
+      && apk add expat-dev mariadb-dev gzip \
       && wget -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
       && wget -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
       && unzip parser.zip && cp -v dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
       && unzip viewer.zip && cp -v dmarcts-report-viewer-master/* /var/www/viewer/ && rm -f viewer.zip \
       && sed -i "1s/^/body { font-family: Sans-Serif; }\n/" /var/www/viewer/default.css \
       && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
+      && cpan install SULLR/IO-Socket-SSL-2.060.tar.gz \
       && for i in \
+	CPAN \
         IO::Compress::Gzip \
         Getopt::Long \
 	Mail::IMAPClient \
@@ -32,7 +34,6 @@ RUN set -x \
 	Socket \
 	Socket6 \
         PerlIO::gzip \
-        IO::Socket::SSL \
         ; do cpan install $i; done \
       && apk del mariadb-dev expat-dev \
       && apk add mariadb-client-libs \

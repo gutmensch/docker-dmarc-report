@@ -17,6 +17,7 @@ RUN set -x \
       && sed -i "1s/^/body { font-family: Sans-Serif; }\n/" /var/www/viewer/default.css \
       && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
       && cpan install SULLR/IO-Socket-SSL-2.060.tar.gz \
+      && cpan install MICHIELB/File-MimeInfo-0.28.tar.gz \
       && for i in \
 	CPAN \
         IO::Compress::Gzip \

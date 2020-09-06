@@ -21,9 +21,9 @@ docker run -e ... -ti gutmensch/dmarc-report
 New dmarc reports will be fetched every 15 minutes past the hour, every hour. Therefore it can take up to one hour for the first report to be fetched.
 
 ## Versions for last build latest
-dmarcts report viewer: 2019-01-04
+dmarcts report viewer: 2020-09-06
 
-dmarcts report parser: 2019-01-04
+dmarcts report parser: 2020-09-06
 
 ## Sample docker compose / Environment variables
 The variables should be self-explanatory. Make sure to create the IMAP folders before the cron job runs!
@@ -46,11 +46,13 @@ services:
       - "REPORT_DB_NAME=dmarc_report"
       - "REPORT_DB_USER=dmarc_report"
       - "REPORT_DB_PASS=dbpassword"
-      - "PARSER_IMAP_SERVER_WITH_PORT=mail:143"
+      - "PARSER_IMAP_SERVER=mail"
+      - "PARSER_IMAP_PORT=143"
       - "PARSER_IMAP_USER=foobar@example.com"
       - "PARSER_IMAP_PASS=foobar"
       - "PARSER_IMAP_READ_FOLDER=Inbox"
       - "PARSER_IMAP_MOVE_FOLDER=processed"
+      - "PARSER_IMAP_MOVE_FOLDER_ERR=error"
 
   db:
     image: mariadb:10

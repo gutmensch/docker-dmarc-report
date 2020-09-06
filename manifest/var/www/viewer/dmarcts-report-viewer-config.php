@@ -12,7 +12,7 @@ $dbport='3306';
 
 $cssfile="default.css";
 
-$default_lookup = 1;  # 1=on 0=off (on is old behaviour )
-$default_sort = 0;  # 1=ASCdening 0=DESCending (ASCending is default behaviour )
+$default_hostlookup = 1;  # 1=on 0=off (on is old behaviour )
+$default_sort = 1;  # 1=ASCdening 0=DESCending (ASCending is default behaviour )
 
 ?>

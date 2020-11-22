@@ -25,6 +25,9 @@ dmarcts report viewer: 2020-09-06
 
 dmarcts report parser: 2020-09-06
 
+## Frontend Screenshot
+![DMARC Report Viewer](https://github.com/gutmensch/docker-dmarc-report/blob/master/screenshot.png?raw=true)
+
 ## Sample docker compose / Environment variables
 The variables should be self-explanatory. Make sure to create the IMAP folders before the cron job runs!
 

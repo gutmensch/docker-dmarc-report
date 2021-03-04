@@ -64,6 +64,8 @@ services:
       - "MYSQL_DATABASE=dmarc_report"
       - "MYSQL_USER=dmarc_report"
       - "MYSQL_PASSWORD=dbpassword"
+    volumes:
+      - ./data/db:/var/lib/mysql
 ```
 
 ## Optional extended configuration

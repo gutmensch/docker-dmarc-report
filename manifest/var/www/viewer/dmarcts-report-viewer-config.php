@@ -14,5 +14,7 @@ $cssfile="default.css";
 
 $default_hostlookup = 1;  # 1=on 0=off (on is old behaviour )
 $default_sort = 1;  # 1=ASCdening 0=DESCending (ASCending is default behaviour )
+$imapignoreerror = 1;
+
 
 ?>

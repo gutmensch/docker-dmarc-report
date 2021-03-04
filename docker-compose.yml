@@ -1,0 +1,36 @@
+version: '3.6'
+
+services:
+  dmarc-report:
+    image: dmarc-report:latest
+    hostname: dmarc-report
+    container_name: dmarc-report
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "4446:80"
+    environment:
+      - "REPORT_DB_HOST=db"
+      - "REPORT_DB_NAME=dmarc_report"
+      - "REPORT_DB_USER=dmarc_report"
+      - "REPORT_DB_PASS=VerySafePassword"
+      - "PARSER_IMAP_SERVER=mail.domain.tld"
+      - "PARSER_IMAP_PORT=143"
+      - "PARSER_IMAP_USER=dmarcreports@mail.domain.tld"
+      - "PARSER_IMAP_PASS=SafeEmailPassword"
+      - "PARSER_IMAP_READ_FOLDER=Inbox"
+      - "PARSER_IMAP_MOVE_FOLDER=processed"
+      - "PARSER_IMAP_MOVE_FOLDER_ERR=error"
+
+  db:
+    image: mariadb:10
+    container_name: dmarc-report-db
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=otherVerySafePassword"
+      - "MYSQL_DATABASE=dmarc_report"
+      - "MYSQL_USER=dmarc_report"
+      - "MYSQL_PASSWORD=VerySafePassword"
+    volumes:
+      - ./data/db:/var/lib/mysql

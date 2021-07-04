@@ -12,8 +12,8 @@ RUN set -x \
       && apk add expat-dev mariadb-dev gzip \
       && wget -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
       && wget -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
-      && unzip parser.zip && cp -v dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
-      && unzip viewer.zip && cp -v dmarcts-report-viewer-master/* /var/www/viewer/ && rm -f viewer.zip \
+      && unzip parser.zip && cp -av dmarcts-report-parser-master/* /usr/bin/ && rm -f parser.zip \
+      && unzip viewer.zip && cp -av dmarcts-report-viewer-master/* /var/www/viewer/ && rm -f viewer.zip \
       && sed -i "1s/^/body { font-family: Sans-Serif; }\n/" /var/www/viewer/default.css \
       && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
       && cpan install SULLR/IO-Socket-SSL-2.060.tar.gz \

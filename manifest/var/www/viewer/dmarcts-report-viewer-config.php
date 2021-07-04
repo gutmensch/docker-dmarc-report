@@ -5,10 +5,10 @@
 // ####################################################################
 
 $dbhost=getenv('REPORT_DB_HOST');
+$dbport=getenv('REPORT_DB_PORT');
 $dbname=getenv('REPORT_DB_NAME');
 $dbuser=getenv('REPORT_DB_USER');
 $dbpass=getenv('REPORT_DB_PASS');
-$dbport='3306';
 
 $cssfile="default.css";
 

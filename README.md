@@ -62,6 +62,7 @@ services:
 
   db:
     image: mariadb:10
+    command: --skip-innodb-read-only-compressed
     environment:
       - "MYSQL_ROOT_PASSWORD=dbrootpassword"
       - "MYSQL_DATABASE=dmarc_report"

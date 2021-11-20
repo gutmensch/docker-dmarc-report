@@ -76,4 +76,7 @@ Use SSL instead of default TLS. Set both to 0 to turn off encryption. (not recom
     - "PARSER_IMAP_SSL=1"
     - "PARSER_IMAP_TLS=0"
 ```
-
+Ignore ERROR: message_string() issue experienced with Exchange Online.
+```yaml
+	- "PARSER_IMAP_IGNORE_ERROR=1"
+```

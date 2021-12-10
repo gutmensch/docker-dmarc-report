@@ -11,12 +11,12 @@ properties([
 
 node {
     try {
-        setBuildStatus('build started', 'PENDING')
+        setBuildStatus('In progress...', 'PENDING')
         pipeline()
-        setBuildStatus('build succeeded', 'SUCCESS')
+        setBuildStatus('Success', 'SUCCESS')
     }
     catch(e) {
-        setBuildStatus('build failed', 'FAILURE')
+        setBuildStatus(e.take(140), 'FAILURE')
         throw e
     }
     finally {
@@ -24,6 +24,8 @@ node {
     }
 }
 
+
+// --- helper functions ---
 def pipeline() {
     stage('checkout') {
         checkout scm
@@ -58,6 +60,7 @@ def cleanup() {
 
 void setBuildStatus(message, state) {
   def repoUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
+  echo repoUrl
   step([
       $class: "GitHubCommitStatusSetter",
       reposSource: [$class: "ManuallyEnteredRepositorySource", url: repoUrl],

@@ -16,7 +16,7 @@ node {
         setBuildStatus('Success', 'SUCCESS')
     }
     catch(e) {
-        setBuildStatus(e.take(140), 'FAILURE')
+        setBuildStatus(e.toString().take(140), 'FAILURE')
         throw e
     }
     finally {

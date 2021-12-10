@@ -11,12 +11,11 @@ properties([
 
 node {
     try {
-        setBuildStatus('In progress...', 'PENDING')
         pipeline()
         setBuildStatus('Success', 'SUCCESS')
     }
     catch(e) {
-        // setBuildStatus(e.toString().take(140), 'FAILURE')
+        setBuildStatus(e.toString().take(140), 'FAILURE')
         throw e
     }
     finally {
@@ -29,6 +28,7 @@ node {
 def pipeline() {
     stage('checkout') {
         checkout scm
+        setBuildStatus('In progress...', 'PENDING')
     }
 
     stage('image build') {

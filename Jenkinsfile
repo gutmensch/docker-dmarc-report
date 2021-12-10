@@ -5,7 +5,7 @@ DOCKER_REPO = "${JOB_BASE_NAME}"
 
 properties([
     parameters([
-        string(defaultValue: '3.11', name: 'UPSTREAM_IMAGE', description: "Upstream docker image to start with")
+        string(defaultValue: 'trafex/alpine-nginx-php7:2.0.2', name: 'UPSTREAM_IMAGE', description: "Upstream docker image to start with")
     ])
 ])
 

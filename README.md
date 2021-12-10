@@ -1,4 +1,4 @@
-# docker-dmarc-report [![Docker Pulls](https://img.shields.io/docker/pulls/gutmensch/dmarc-report.svg)](https://registry.hub.docker.com/u/gutmensch/dmarc-report/)
+# docker-dmarc-report [![Build Status](https://jenkins.bln.space/buildStatus/icon?job=docker-images%2Fdocker-dmarc-report)](https://jenkins.bln.space/job/docker-images/job/docker-dmarc-report/) [![Docker Pulls](https://img.shields.io/docker/pulls/gutmensch/dmarc-report.svg)](https://registry.hub.docker.com/u/gutmensch/dmarc-report/)
 
 This image is intended to combine a dmarc report parser (see https://github.com/techsneeze/dmarcts-report-parser by TechSneeze.com and John Bieling) with a report viewer (see https://github.com/techsneeze/dmarcts-report-viewer/ by the same people) into a runnable docker image / microservice.
 

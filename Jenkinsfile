@@ -31,8 +31,8 @@ def pipeline() {
 
     stage('image build') {
         DOCKER_IMAGE = docker.build(
-            "${DOCKER_REGISTRY}/${DOCKER_REPO}:${BUILD_ID}",
-            "--build-arg UPSTREAM_IMAGE=${UPSTREAM_IMAGE}" +
+            "${DOCKER_REGISTRY}/${DOCKER_REPO}:${BUILD_ID} ",
+            "--build-arg UPSTREAM_IMAGE=${UPSTREAM_IMAGE} " +
             "--no-cache ${DOCKER_ARGS} ."
         )
     }

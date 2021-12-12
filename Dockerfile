@@ -2,7 +2,7 @@ ARG UPSTREAM_IMAGE=trafex/alpine-nginx-php7:2.0.2
 
 FROM $UPSTREAM_IMAGE
 
-LABEL maintainer="Robert Schumann <gutmensch@n-os.org>"
+LABEL maintainer="Robert Schumann <rs@n-os.org>"
 
 ENV REPORT_PARSER_SOURCE="https://github.com/techsneeze/dmarcts-report-parser/archive/master.zip" \
     REPORT_VIEWER_SOURCE="https://github.com/techsneeze/dmarcts-report-viewer/archive/master.zip"

@@ -25,7 +25,7 @@ dmarcts report viewer: 2021-07-04
 
 dmarcts report parser: 2021-07-04
 
-CAUTION: The old gutmensch/dmarc-report:latest image (older alpine, php5, etc.) is available still as gutmensch/dmarc-report:0.5. The current latest (and 1.0) uses the latest alpine version, newer MySQL client libraries, newer OpenSSL, etc. and improves compatibilitiy with MySQL 8+. For full compatibility the upstream parser should merge https://github.com/techsneeze/dmarcts-report-parser/pull/103/files too.
+CAUTION: The old gutmensch/dmarc-report:latest image (older alpine, php5, etc.) is available still as gutmensch/dmarc-report:0.5. The current latest (and 1.0) uses the latest alpine version, newer MySQL client libraries, newer OpenSSL, etc. and improves compatibilitiy with MySQL 8+.
 
 ## Frontend Screenshot
 ![DMARC Report Viewer](https://github.com/gutmensch/docker-dmarc-report/blob/master/screenshot.png?raw=true)

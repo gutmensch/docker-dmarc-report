@@ -27,3 +27,13 @@ grep -e ^REPORT_DB_PORT "$PHP_ENV_FILE" || echo env[REPORT_DB_PORT] = 3306 >> "$
 
 # Start supervisord and services
 /usr/bin/supervisord -n -c /etc/supervisord.conf
+
+# Get and parse dmarc reports once at startup to avoid PHP errors with a new database
+if /usr/bin/dmarcts-report-parser.pl -i -d -r > /var/log/nginx/dmarc-reports.log 2>&1; then
+  echo 'INFO: Dmarc reports parsed successfully'
+else
+  echo 'CRIT: Dmarc reports could not be parsed. Check your IMAP and MYSQL Settings.'
+  echo -e "DEBUG: Parsing failed with the following output:\n"
+  cat /var/log/nginx/dmarc-reports.log
+  exit 1
+fi

@@ -4,6 +4,7 @@
 // ### configuration ##################################################
 // ####################################################################
 
+$dbtype=getenv('REPORT_DB_TYPE');
 $dbhost=getenv('REPORT_DB_HOST');
 $dbport=getenv('REPORT_DB_PORT');
 $dbname=getenv('REPORT_DB_NAME');

@@ -1,4 +1,4 @@
-ARG UPSTREAM_IMAGE=trafex/alpine-nginx-php7:2.0.2
+ARG UPSTREAM_IMAGE=trafex/php-nginx:2.6.0
 
 FROM $UPSTREAM_IMAGE
 
@@ -14,8 +14,28 @@ WORKDIR /
 COPY ./manifest/ /
 
 RUN set -x \
-      && apk update \
-      && apk add bash expat-dev mariadb-dev mariadb-client mariadb-connector-c openssl openssl-dev gzip wget perl-utils g++ make perl-dev tzdata \
+      && apk add -U \
+        bash \
+        expat-dev \
+        g++ \
+        gzip \
+        libpq \
+        libpq-dev \
+        make \
+        mariadb-client \
+        mariadb-connector-c \
+        mariadb-dev \
+        musl-obstack \
+        musl-obstack-dev \
+        openssl \
+        openssl-dev \
+        perl-dev \
+        perl-utils \
+        php81-pdo \
+        php81-pdo_mysql \
+        php81-pdo_pgsql \
+        tzdata \
+        wget \
       && wget -4 -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
       && wget -4 -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
       && unzip parser.zip && cp -av dmarcts-report-parser-master/* /usr/bin/ && rm -vf parser.zip && rm -rvf dmarcts-report-parser-master \
@@ -44,11 +64,12 @@ RUN set -x \
         XML::Simple \
         DBI \
         DBD::mysql \
+        DBD::Pg \
 	Socket \
 	Socket6 \
         PerlIO::gzip \
         ; do cpan install $i; done \
-      && apk del mariadb-dev expat-dev openssl-dev perl-dev g++ make
+      && apk del mariadb-dev expat-dev openssl-dev perl-dev g++ make musl-obstack-dev libpq-dev
 
 HEALTHCHECK --interval=1m --timeout=3s CMD curl --silent --fail http://127.0.0.1:80/fpm-ping
 

@@ -16,11 +16,13 @@ procs=$(cat /proc/cpuinfo | grep processor | wc -l)
 sed -i -e "s/worker_processes 5/worker_processes $procs/" /etc/nginx/nginx.conf
 
 # Copy important env vars for PHP-FPM to access
-PHP_ENV_FILE="/etc/php8/php-fpm.d/${PHP_ENV_FILE:-env.conf}"
+PHP_ENV_FILE="/etc/php81/php-fpm.d/${PHP_ENV_FILE:-env.conf}"
 echo '[www]' > "$PHP_ENV_FILE"
 echo 'user = nginx' >> "$PHP_ENV_FILE"
 echo 'group = www-data' >> "$PHP_ENV_FILE"
-env | grep -e 'REPORT_DB_HOST' -e 'REPORT_DB_PORT' -e 'REPORT_DB_NAME' -e 'REPORT_DB_USER' -e 'REPORT_DB_PASS' | sed "s/\(.*\)=\(.*\)/env[\1] = '\2'/" >> "$PHP_ENV_FILE"
+echo 'listen.owner = nginx' >> "$PHP_ENV_FILE"
+echo 'listen.group = www-data' >> "$PHP_ENV_FILE"
+env | grep -e 'REPORT_DB_TYPE' -e 'REPORT_DB_HOST' -e 'REPORT_DB_PORT' -e 'REPORT_DB_NAME' -e 'REPORT_DB_USER' -e 'REPORT_DB_PASS' | sed "s/\(.*\)=\(.*\)/env[\1] = '\2'/" >> "$PHP_ENV_FILE"
 
 # compat from older image where variable was not existing
 grep -e ^REPORT_DB_PORT "$PHP_ENV_FILE" || echo env[REPORT_DB_PORT] = 3306 >> "$PHP_ENV_FILE"

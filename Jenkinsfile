@@ -9,6 +9,7 @@ DOCKER_REGISTRY   = 'registry.n-os.org:5000'
 
 
 properties([
+    disableConcurrentBuilds(),
     parameters([
         booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Do you want to run the build with tests?')
     ])
@@ -114,7 +115,6 @@ String getDockerTag() {
 
 void setBuildStatus(message, state) {
   def repoUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
-  echo repoUrl
   step([
       $class: "GitHubCommitStatusSetter",
       reposSource: [$class: "ManuallyEnteredRepositorySource", url: repoUrl],

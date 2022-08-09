@@ -25,9 +25,6 @@ env | grep -e 'REPORT_DB_HOST' -e 'REPORT_DB_PORT' -e 'REPORT_DB_NAME' -e 'REPOR
 # compat from older image where variable was not existing
 grep -e ^REPORT_DB_PORT "$PHP_ENV_FILE" || echo env[REPORT_DB_PORT] = 3306 >> "$PHP_ENV_FILE"
 
-# Start supervisord and services
-/usr/bin/supervisord -n -c /etc/supervisord.conf
-
 # Get and parse dmarc reports once at startup to avoid PHP errors with a new database
 if /usr/bin/dmarcts-report-parser.pl -i -d -r > /var/log/nginx/dmarc-reports.log 2>&1; then
   echo 'INFO: Dmarc reports parsed successfully'
@@ -37,3 +34,6 @@ else
   cat /var/log/nginx/dmarc-reports.log
   exit 1
 fi
+
+# Start supervisord and services
+/usr/bin/supervisord -n -c /etc/supervisord.conf

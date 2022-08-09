@@ -1,4 +1,4 @@
-# docker-dmarc-report [![Build Status](https://jenkins.bln.space/buildStatus/icon?job=docker-images%2Fdocker-jenkins%2Fmaster)](https://jenkins.bln.space/job/docker-images/job/docker-jenkins/job/master/) [![Docker Pulls](https://img.shields.io/docker/pulls/gutmensch/dmarc-report.svg)](https://registry.hub.docker.com/u/gutmensch/dmarc-report/)
+# docker-dmarc-report [![Build Status](https://jenkins.bln.space/buildStatus/icon?job=docker-images%2Fdocker-dmarc-report%2Fmaster)](https://jenkins.bln.space/job/docker-images/job/docker-dmarc-report/job/master/) [![Docker Pulls](https://img.shields.io/docker/pulls/gutmensch/dmarc-report.svg)](https://registry.hub.docker.com/u/gutmensch/dmarc-report/)
 
 This image is intended to combine a dmarc report parser (see https://github.com/techsneeze/dmarcts-report-parser by TechSneeze.com and John Bieling) with a report viewer (see https://github.com/techsneeze/dmarcts-report-viewer/ by the same people) into a runnable docker image / microservice.
 
@@ -20,10 +20,10 @@ docker run -e ... -ti gutmensch/dmarc-report
 
 New dmarc reports will be fetched every 15 minutes past the hour, every hour. Therefore it can take up to one hour for the first report to be fetched.
 
-## Versions for last build latest and version 1.0
-dmarcts report viewer: 2021-07-04
+## Versions for last build latest and docker image tag 1.2
+dmarcts report viewer: 2022-08-10
 
-dmarcts report parser: 2021-07-04
+dmarcts report parser: 2022-08-10
 
 CAUTION: The old gutmensch/dmarc-report:latest image (older alpine, php5, etc.) is available still as gutmensch/dmarc-report:0.5. The current latest (and 1.0) uses the latest alpine version, newer MySQL client libraries, newer OpenSSL, etc. and improves compatibilitiy with MySQL 8+.
 
@@ -79,5 +79,9 @@ Use SSL instead of default TLS. Set both to 0 to turn off encryption. (not recom
 Ignore ERROR: message_string() issue experienced with Exchange Online.
 ```yaml
     - "PARSER_IMAP_IGNORE_ERROR=1"
+```
+Parser and Viewer support Postgres now too (default is mysql)
+```yaml
+    - "REPORT_DB_TYPE=pgsql"
 ```
 

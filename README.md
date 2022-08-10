@@ -20,7 +20,7 @@ docker run -e ... -ti gutmensch/dmarc-report
 
 New dmarc reports will be fetched every 15 minutes past the hour, every hour. Therefore it can take up to one hour for the first report to be fetched.
 
-## Versions for last build latest and docker image tag 1.2
+## Versions for last build latest and docker image tag 1.3
 dmarcts report viewer: 2022-08-10
 
 dmarcts report parser: 2022-08-10

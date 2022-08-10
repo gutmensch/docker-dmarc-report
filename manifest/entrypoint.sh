@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
+# change according to alpine and php release
+PHP_VERSION=81
+
 # Display PHP error's or not
 if [[ "$ERRORS" != "1" ]] ; then
-  sed -i -e "s/error_reporting =.*/error_reporting = E_ALL/g" /etc/php8/php.ini
-  sed -i -e "s/display_errors =.*/display_errors = stdout/g" /etc/php8/php.ini
+  sed -i -e "s/error_reporting =.*/error_reporting = E_ALL/g" /etc/php${PHP_VERSION}/php.ini
+  sed -i -e "s/display_errors =.*/display_errors = stdout/g" /etc/php${PHP_VERSION}/php.ini
 fi
 
 # Disable opcache?
 if [[ -v NO_OPCACHE ]]; then
-    sed -i -e "s/zend_extension=opcache.so/;zend_extension=opcache.so/g" /etc/php8/conf.d/00_opcache.ini
+    sed -i -e "s/zend_extension=opcache.so/;zend_extension=opcache.so/g" /etc/php${PHP_VERSION}/conf.d/00_opcache.ini
 fi
 
 # Tweak nginx to match the workers to cpu's
@@ -16,7 +19,7 @@ procs=$(cat /proc/cpuinfo | grep processor | wc -l)
 sed -i -e "s/worker_processes 5/worker_processes $procs/" /etc/nginx/nginx.conf
 
 # Copy important env vars for PHP-FPM to access
-PHP_ENV_FILE="/etc/php81/php-fpm.d/${PHP_ENV_FILE:-env.conf}"
+PHP_ENV_FILE="/etc/php${PHP_VERSION}/php-fpm.d/${PHP_ENV_FILE:-env.conf}"
 echo '[www]' > "$PHP_ENV_FILE"
 echo 'user = nginx' >> "$PHP_ENV_FILE"
 echo 'group = www-data' >> "$PHP_ENV_FILE"

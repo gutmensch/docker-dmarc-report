@@ -98,5 +98,5 @@ Ignore ERROR: message_string() issue experienced with Exchange Online.
 Parser and Viewer support Postgres now too (default is mysql)
 
 ```yaml
-- "REPORT_DB_TYPE=Pg"
+- "REPORT_DB_TYPE=pgsql"
 ```

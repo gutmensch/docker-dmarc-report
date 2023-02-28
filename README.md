@@ -100,3 +100,10 @@ Parser and Viewer support Postgres now too (default is mysql)
 ```yaml
 - "REPORT_DB_TYPE=pgsql"
 ```
+
+Increase the maximum size of the XML file. (default is `50000` bytes)  
+When the size exceeds the maximum, one could experience an error `Uncaught ValueError: DOMDocument::loadXML(): Argument #1 ($source) must not be empty`.
+
+```yaml
+- "PARSER_XML_MAXSIZE=500000"
+```

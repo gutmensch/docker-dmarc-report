@@ -107,3 +107,11 @@ When the size exceeds the maximum, one could experience an error `Uncaught Value
 ```yaml
 - "PARSER_XML_MAXSIZE=500000"
 ```
+
+## Contributors
+
+<img src="./CONTRIBUTORS.svg">
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/gutmensch/docker-dmarc-report.svg)](https://starchart.cc/gutmensch/docker-dmarc-report)

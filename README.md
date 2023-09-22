@@ -78,6 +78,13 @@ services:
       - "MYSQL_DATABASE=dmarc_report"
       - "MYSQL_USER=dmarc_report"
       - "MYSQL_PASSWORD=dbpassword"
+    volumes:
+      - ./dmarc-report-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pdbrootpassword"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 ```
 
 ## Optional extended configuration

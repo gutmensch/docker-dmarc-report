@@ -28,9 +28,9 @@ New dmarc reports will be fetched every 15 minutes past the hour, every hour. Th
 
 ## Versions for last build latest and docker image tag 1.4
 
-dmarcts report viewer: 2023-01-07
+dmarcts report viewer: 2024-02-04
 
-dmarcts report parser: 2023-01-07
+dmarcts report parser: 2024-02-04
 
 CAUTION: The old gutmensch/dmarc-report:latest image (older alpine, php5, etc.) is available still as gutmensch/dmarc-report:0.5. The current latest (and 1.0) uses the latest alpine version, newer MySQL client libraries, newer OpenSSL, etc. and improves compatibilitiy with MySQL 8+.
 

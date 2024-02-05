@@ -13,11 +13,13 @@ WORKDIR /
 
 COPY ./manifest/ /
 
-RUN set -x \
+RUN set -e -x \
   && apk add -U \
   bash \
+  cmake \
   expat-dev \
   g++ \
+  gpg \
   gzip \
   libpq \
   libpq-dev \
@@ -46,7 +48,7 @@ RUN set -x \
   && sed -i 's%.*root /var/www/html;%        root /var/www/viewer;%g' /etc/nginx/nginx.conf \
   && sed -i 's/.*index index.php index.html;/        index dmarcts-report-viewer.php;/g' /etc/nginx/nginx.conf \
   && sed -i 's%files = /etc/supervisor.d/\*.ini%files = /etc/supervisor/conf.d/*.conf%g' /etc/supervisord.conf \
-  && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
+  && (echo y;echo o conf allow_installing_outdated_dists yes;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
   && for i in \
   IO::Socket::SSL \
   CPAN \
@@ -63,13 +65,16 @@ RUN set -x \
   XML::Parser \
   XML::Simple \
   DBI \
-  DBD::mysql \
+  # XXX: pinning to a version, which does not suffer from mariadb 10 version comparison issues
+  # TODO: replace with DBD::mysql again, when issue is resolved
+  # https://forum.bestpractical.com/t/mysql-dependency-error-with-mariadb-and-debian-12/38748/2
+  DVEEDEN/DBD-mysql-4.052.tar.gz \
   DBD::Pg \
   Socket \
   Socket6 \
   PerlIO::gzip \
   ; do cpan install $i; done \
-  && apk del mariadb-dev expat-dev openssl-dev perl-dev g++ make musl-obstack-dev libpq-dev
+  && apk del mariadb-dev expat-dev openssl-dev perl-dev g++ cmake make musl-obstack-dev libpq-dev
 
 HEALTHCHECK --interval=1m --timeout=3s CMD curl --silent --fail http://127.0.0.1:80/fpm-ping
 

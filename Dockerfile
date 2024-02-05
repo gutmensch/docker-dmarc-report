@@ -48,7 +48,7 @@ RUN set -e -x \
   && sed -i 's%.*root /var/www/html;%        root /var/www/viewer;%g' /etc/nginx/nginx.conf \
   && sed -i 's/.*index index.php index.html;/        index dmarcts-report-viewer.php;/g' /etc/nginx/nginx.conf \
   && sed -i 's%files = /etc/supervisor.d/\*.ini%files = /etc/supervisor/conf.d/*.conf%g' /etc/supervisord.conf \
-  && (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
+  && (echo y;echo o conf allow_installing_outdated_dists yes;echo o conf prerequisites_policy follow;echo o conf commit)|cpan \
   && for i in \
   IO::Socket::SSL \
   CPAN \

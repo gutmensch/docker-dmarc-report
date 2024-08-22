@@ -1,0 +1,39 @@
+services:
+  dmarc-report:
+    image: "gutmensch/dmarc-report:latest"
+    hostname: dmarc-report
+    container_name: dmarc-report
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    environment:
+      - "REPORT_DB_HOST=db"
+      - "REPORT_DB_PORT=3306"
+      - "REPORT_DB_NAME=dmarc_report"
+      - "REPORT_DB_USER=dmarc_report"
+      - "REPORT_DB_PASS=${DMARC_DB_PASSWORD}"
+      - "PARSER_IMAP_SERVER=mail"
+      - "PARSER_IMAP_PORT=143"
+      - "PARSER_IMAP_USER=${DMARC_EMAIL}"
+      - "PARSER_IMAP_PASS=${DMARC_PASSWORD}"
+      - "PARSER_IMAP_READ_FOLDER=Inbox"
+      - "PARSER_IMAP_MOVE_FOLDER=${IMAP_MOVE_FOLDER:-processed}"
+      - "PARSER_IMAP_MOVE_FOLDER_ERR=${IMAP_MOVE_FOLDER_ERR:-error}"
+
+  db:
+    image: mariadb:10
+    command: --skip-innodb-read-only-compressed
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${ROOT_DB_PASSWORD}"
+      - "MYSQL_DATABASE=dmarc_report"
+      - "MYSQL_USER=dmarc_report"
+      - "MYSQL_PASSWORD=${DMARC_DB_PASSWORD}"
+    volumes:
+      - ./run/db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pdbrootpassword"]
+      interval: 10s
+      timeout: 10s
+      retries: 5

@@ -45,8 +45,6 @@ The variables should be self-explanatory. Make sure to create the IMAP folders b
 **docker-compose.yml**
 
 ```yaml
-version: "3.6"
-
 services:
   dmarc-report:
     image: "gutmensch/dmarc-report:latest"
@@ -86,6 +84,15 @@ services:
       timeout: 10s
       retries: 5
 ```
+
+## Manual update
+
+If you are using the docker-compose file above, you can use this command to trigger an manual update. It will fetch the latest reports and parse them.
+
+```bash
+docker compose exec dmarc-report /usr/bin/dmarcts-report-parser.pl -i -d -r=1
+```
+
 
 ## Optional extended configuration
 

@@ -40,52 +40,27 @@ CAUTION: The old gutmensch/dmarc-report:latest image (older alpine, php5, etc.) 
 
 ## Sample docker compose / Environment variables
 
-The variables should be self-explanatory. Make sure to create the IMAP folders before the cron job runs!
+Make sure to create the IMAP-Folders for processed and error reports before the cron job runs!
 
-**docker-compose.yml**
+The default foldernames are are [`error`](examples/env.example) & [`processed`](examples/env.example) but they can be changed within the [`env-file`](examples/env.example).
 
-```yaml
-version: "3.6"
+Make sure to rename the [`env.example`](examples/env.example) file to `.env` and adjust the values to your needs.
 
-services:
-  dmarc-report:
-    image: "gutmensch/dmarc-report:latest"
-    hostname: dmarc-report
-    container_name: dmarc-report
-    depends_on:
-      - db
-    ports:
-      - "80:80"
-    environment:
-      - "REPORT_DB_HOST=db"
-      - "REPORT_DB_PORT=3306"
-      - "REPORT_DB_NAME=dmarc_report"
-      - "REPORT_DB_USER=dmarc_report"
-      - "REPORT_DB_PASS=dbpassword"
-      - "PARSER_IMAP_SERVER=mail"
-      - "PARSER_IMAP_PORT=143"
-      - "PARSER_IMAP_USER=foobar@example.com"
-      - "PARSER_IMAP_PASS=foobar"
-      - "PARSER_IMAP_READ_FOLDER=Inbox"
-      - "PARSER_IMAP_MOVE_FOLDER=processed"
-      - "PARSER_IMAP_MOVE_FOLDER_ERR=error"
+You can find templates for both, [`postgreql`](examples/docker-compose.postgres.yml)
+ and [`mysql`](examples/docker-compose.mysql.yml)
+ db in the [`examples`](examples) directory. Just rename the setup you want to use to `docker-compose.yml`.
 
-  db:
-    image: mariadb:10
-    command: --skip-innodb-read-only-compressed
-    environment:
-      - "MYSQL_ROOT_PASSWORD=dbrootpassword"
-      - "MYSQL_DATABASE=dmarc_report"
-      - "MYSQL_USER=dmarc_report"
-      - "MYSQL_PASSWORD=dbpassword"
-    volumes:
-      - ./dmarc-report-db:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pdbrootpassword"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
+
+
+
+## Manual update
+
+If you are using the docker-compose file above, you can use this command to trigger an manual update. It will fetch the latest reports and parse them.
+
+```bash
+docker compose exec dmarc-report /usr/bin/dmarcts-report-parser.pl -i -d -r=1
 ```
+
 
 ## Optional extended configuration
 

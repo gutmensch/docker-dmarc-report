@@ -3,6 +3,7 @@ services:
     image: "gutmensch/dmarc-report:latest"
     hostname: dmarc-report
     container_name: dmarc-report
+    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -10,8 +11,8 @@ services:
       - "80:80"
     environment:
       - "REPORT_DB_HOST=${DB_HOST:-db}"
-      - "REPORT_DB_TYPE=${DB_TYPE:-mysql}"
-      - "REPORT_DB_PORT=${DB_PORT:-3306}"
+      - "REPORT_DB_TYPE=${DB_TYPE:-pgsql}"
+      - "REPORT_DB_PORT=${DB_PORT:-5432}"
       - "REPORT_DB_NAME=${DB_NAME:-dmarc_report}"
       - "REPORT_DB_USER=${DB_USER:-dmarc_report}"
       - "REPORT_DB_PASS=${DB_PASSWORD}"
@@ -22,13 +23,18 @@ services:
       - "PARSER_IMAP_READ_FOLDER=${IMAP_READ_FOLDER:-Inbox}"
       - "PARSER_IMAP_MOVE_FOLDER=${IMAP_MOVE_FOLDER:-processed}"
       - "PARSER_IMAP_MOVE_FOLDER_ERR=${IMAP_MOVE_FOLDER_ERR:-error}"
+      - "PARSER_IMAP_SSL=${PARSER_IMAP_SSL}"
+      - "PARSER_IMAP_TLS=${PARSER_IMAP_TLS}"
+      - "PARSER_IMAP_IGNORE_ERROR=${PARSER_IMAP_IGNORE_ERROR}"
+      - "PARSER_XML_MAXSIZE=${PARSER_XML_MAXSIZE}"
 
   db:
     image: postgres:latest
+    restart: always
     environment:
-      - "POSTGRES_DB=dmarc_report"
-      - "POSTGRES_USER=dmarc_report"
-      - "POSTGRES_PASSWORD=${DMARC_DB_PASSWORD}"
+      - "POSTGRES_DB=${DB_NAME:-dmarc_report}"
+      - "POSTGRES_USER=${DB_USER:-dmarc_report}"
+      - "POSTGRES_PASSWORD=${DB_PASSWORD}"
     volumes:
       - ./run/db:/var/lib/postgresql/data
     healthcheck:

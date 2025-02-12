@@ -3,6 +3,7 @@ services:
     image: "gutmensch/dmarc-report:latest"
     hostname: dmarc-report
     container_name: dmarc-report
+    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -22,15 +23,20 @@ services:
       - "PARSER_IMAP_READ_FOLDER=${IMAP_READ_FOLDER:-Inbox}"
       - "PARSER_IMAP_MOVE_FOLDER=${IMAP_MOVE_FOLDER:-processed}"
       - "PARSER_IMAP_MOVE_FOLDER_ERR=${IMAP_MOVE_FOLDER_ERR:-error}"
+      - "PARSER_IMAP_SSL=${PARSER_IMAP_SSL}"
+      - "PARSER_IMAP_TLS=${PARSER_IMAP_TLS}"
+      - "PARSER_IMAP_IGNORE_ERROR=${PARSER_IMAP_IGNORE_ERROR}"
+      - "PARSER_XML_MAXSIZE=${PARSER_XML_MAXSIZE}"
 
   db:
     image: mariadb:10
     command: --skip-innodb-read-only-compressed
+    restart: always
     environment:
       - "MYSQL_ROOT_PASSWORD=${ROOT_DB_PASSWORD}"
-      - "MYSQL_DATABASE=dmarc_report"
-      - "MYSQL_USER=dmarc_report"
-      - "MYSQL_PASSWORD=${DMARC_DB_PASSWORD}"
+      - "MYSQL_DATABASE=${DB_NAME:-dmarc_report}"
+      - "MYSQL_USER=${DB_USER:-dmarc_report}"
+      - "MYSQL_PASSWORD=${DB_PASSWORD}"
     volumes:
       - ./run/db:/var/lib/mysql
     healthcheck:

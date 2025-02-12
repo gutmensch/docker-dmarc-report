@@ -61,34 +61,9 @@ If you are using the docker-compose file above, you can use this command to trig
 docker compose exec dmarc-report /usr/bin/dmarcts-report-parser.pl -i -d -r=1
 ```
 
-
 ## Optional extended configuration
 
-Use SSL instead of default TLS. Set both to 0 to turn off encryption. (not recommended)
-
-```yaml
-- "PARSER_IMAP_SSL=1"
-- "PARSER_IMAP_TLS=0"
-```
-
-Ignore ERROR: message_string() issue experienced with Exchange Online.
-
-```yaml
-- "PARSER_IMAP_IGNORE_ERROR=1"
-```
-
-Parser and Viewer support Postgres now too (default is mysql)
-
-```yaml
-- "REPORT_DB_TYPE=pgsql"
-```
-
-Increase the maximum size of the XML file. (default is `50000` bytes)  
-When the size exceeds the maximum, one could experience an error `Uncaught ValueError: DOMDocument::loadXML(): Argument #1 ($source) must not be empty`.
-
-```yaml
-- "PARSER_XML_MAXSIZE=500000"
-```
+For further optional configuration see the docker-compose [`env-file`](examples/env.example).
 
 ## Contributors
 

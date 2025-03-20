@@ -40,7 +40,7 @@ services:
     volumes:
       - ./run/db:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pdbrootpassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${ROOT_DB_PASSWORD}"]
       interval: 10s
       timeout: 10s
       retries: 5

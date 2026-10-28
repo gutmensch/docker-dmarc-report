@@ -38,8 +38,8 @@ RUN set -e -x \
   php81-pdo_pgsql \
   tzdata \
   wget \
-  && wget -4 -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
-  && wget -4 -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
+  && wget -4 -q -O parser.zip $REPORT_PARSER_SOURCE \
+  && wget -4 -q -O viewer.zip $REPORT_VIEWER_SOURCE \
   && unzip parser.zip && cp -av dmarcts-report-parser-master/* /usr/bin/ && rm -vf parser.zip && rm -rvf dmarcts-report-parser-master \
   && unzip viewer.zip && cp -av dmarcts-report-viewer-master/* /var/www/viewer/ && rm -vf viewer.zip && rm -rvf dmarcts-report-viewer-master \
   && sed -i "1s/^/body { font-family: Sans-Serif; }\n/" /var/www/viewer/default.css \

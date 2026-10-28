@@ -4,7 +4,7 @@
 PHP_VERSION=81
 
 # Display PHP error's or not
-if [[ "$ERRORS" != "1" ]] ; then
+if [[ "$ERRORS" == "1" ]] ; then
   sed -i -e "s/error_reporting =.*/error_reporting = E_ALL/g" /etc/php${PHP_VERSION}/php.ini
   sed -i -e "s/display_errors =.*/display_errors = stdout/g" /etc/php${PHP_VERSION}/php.ini
 fi
